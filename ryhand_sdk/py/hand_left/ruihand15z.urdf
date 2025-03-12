@@ -1,0 +1,1472 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="ruihand15z">
+  <link
+    name="basez_link">
+    <inertial>
+      <origin
+        xyz="-0.000343173693196291 -0.00107533196815868 0.0538785364397158"
+        rpy="0 0 0" />
+      <mass
+        value="0.227678923959154" />
+      <inertia
+        ixx="0.000233949235617769"
+        ixy="7.90989515641804E-06"
+        ixz="1.11723412109733E-06"
+        iyy="8.94875887691195E-05"
+        iyz="-2.89929640916139E-07"
+        izz="0.000204633059326567" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="basez_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="basez_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="fz11_Link">
+    <inertial>
+      <origin
+        xyz="-1.79457143589801E-15 9.40220123979429E-16 0.00899061986241671"
+        rpy="0 0 0" />
+      <mass
+        value="0.00121360929921686" />
+      <inertia
+        ixx="2.58560142514925E-08"
+        ixy="1.10591413462516E-08"
+        ixz="-4.04031326457625E-23"
+        iyy="4.44154571010466E-08"
+        iyz="1.90437680618767E-23"
+        izz="3.46380536471336E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz11_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz11_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz11"
+    type="revolute">
+    <origin
+      xyz="0.0432740521182429 -0.0280103616919723 0.0198000000000003"
+      rpy="0 0 1.5707963267949" />
+    <parent
+      link="basez_link" />
+    <child
+      link="fz11_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5236"
+      upper="0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz12_Link">
+    <inertial>
+      <origin
+        xyz="-0.0219931136714581 -0.00242991883748801 0.00939663411233334"
+        rpy="0 0 0" />
+      <mass
+        value="0.00867971105241181" />
+      <inertia
+        ixx="4.19465389343492E-07"
+        ixy="-1.70828148823719E-08"
+        ixz="-3.80668629308338E-11"
+        iyy="1.48378274279054E-06"
+        iyz="-3.94675866684313E-11"
+        izz="1.72593124811842E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz12_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz12_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz12"
+    type="revolute">
+    <origin
+      xyz="0.0085193 -0.0039726 0.0141"
+      rpy="-1.5708 0 1.1345" />
+    <parent
+      link="fz11_Link" />
+    <child
+      link="fz12_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz13_Link">
+    <inertial>
+      <origin
+        xyz="-0.0126990507925126 -0.00157345468912084 0.00900093072894519"
+        rpy="0 0 0" />
+      <mass
+        value="0.00476430658437229" />
+      <inertia
+        ixx="2.02509589279811E-07"
+        ixy="-5.40162774811166E-08"
+        ixz="-8.05266363835563E-12"
+        iyy="4.48784909974951E-07"
+        iyz="-4.20947067171231E-11"
+        izz="5.20433152925434E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz13_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz13_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz13"
+    type="revolute">
+    <origin
+      xyz="-0.04 0.0020036 0.0004"
+      rpy="0 0 0" />
+    <parent
+      link="fz12_Link" />
+    <child
+      link="fz13_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz14_Link">
+    <inertial>
+      <origin
+        xyz="-0.00453291060026979 0.00472963864385041 0.0085002853172281"
+        rpy="0 0 0" />
+      <mass
+        value="0.00501763174574247" />
+      <inertia
+        ixx="2.42260748249043E-07"
+        ixy="1.32389385112088E-07"
+        ixz="1.48296682719167E-11"
+        iyy="5.10623486838744E-07"
+        iyz="-6.07620683644842E-12"
+        izz="5.23917809101026E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz14_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz14_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz14"
+    type="revolute">
+    <origin
+      xyz="-0.026394 -0.0056891 0.0005"
+      rpy="0 0 0" />
+    <parent
+      link="fz13_Link" />
+    <child
+      link="fz14_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz15_Link">
+    <inertial>
+      <origin
+        xyz="0.00807621626554746 -0.0027951812140176 1.05982805131619E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.0047187316707086" />
+      <inertia
+        ixx="1.74396668770053E-07"
+        ixy="3.59592178537143E-08"
+        ixz="-8.47908450546585E-12"
+        iyy="3.14361854246266E-07"
+        iyz="3.75583978767592E-11"
+        izz="2.68192719086891E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz15_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz15_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz15"
+    type="fixed">
+    <origin
+      xyz="-0.022081 0.0064251 0.0085"
+      rpy="0 0 -0.019201" />
+    <parent
+      link="fz14_Link" />
+    <child
+      link="fz15_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="fz21_Link">
+    <inertial>
+      <origin
+        xyz="8.67361737988404E-18 -1.38777878078145E-17 0.00889061986241678"
+        rpy="0 0 0" />
+      <mass
+        value="0.00121360929921685" />
+      <inertia
+        ixx="2.06990519491167E-08"
+        ixy="-1.09024171460964E-21"
+        ixz="-2.87214945251523E-23"
+        iyy="4.95724194034222E-08"
+        iyz="4.73933075957825E-24"
+        izz="3.46380536471335E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz21_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz21_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz21"
+    type="revolute">
+    <origin
+      xyz="-0.0127 -0.03525 0.1127"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="basez_link" />
+    <child
+      link="fz21_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5236"
+      upper="0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz22_Link">
+    <inertial>
+      <origin
+        xyz="-0.0024224459487692 -0.0218789324043602 0.00970417047610463"
+        rpy="0 0 0" />
+      <mass
+        value="0.00846278916519728" />
+      <inertia
+        ixx="1.45078674231352E-06"
+        ixy="-1.85847798062823E-08"
+        ixz="5.82745974533489E-12"
+        iyy="4.05775375043101E-07"
+        iyz="2.23927690148501E-12"
+        izz="1.69324372838136E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz22_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz22_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz22"
+    type="revolute">
+    <origin
+      xyz="0.0097 0 0.014"
+      rpy="3.1416 1.5708 0" />
+    <parent
+      link="fz21_Link" />
+    <child
+      link="fz22_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz23_Link">
+    <inertial>
+      <origin
+        xyz="0.00144556303041219 0.0125380664486048 0.0079121175601971"
+        rpy="0 0 0" />
+      <mass
+        value="0.0042737052106798" />
+      <inertia
+        ixx="3.63123749138908E-07"
+        ixy="-4.7706779462501E-08"
+        ixz="-4.5750404395082E-11"
+        iyy="1.52556733134053E-07"
+        iyz="-1.35005307556749E-10"
+        izz="4.64266435903028E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz23_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz23_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz23"
+    type="revolute">
+    <origin
+      xyz="0.0020036 -0.04 0.0018"
+      rpy="0 0 3.1416" />
+    <parent
+      link="fz22_Link" />
+    <child
+      link="fz23_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz24_Link">
+    <inertial>
+      <origin
+        xyz="-0.0046615489863386 0.00436249932742924 0.0081000001090757"
+        rpy="0 0 0" />
+      <mass
+        value="0.004797086900792" />
+      <inertia
+        ixx="4.75009026472279E-07"
+        ixy="1.27106630360519E-07"
+        ixz="2.70514553945295E-13"
+        iyy="2.17004046491633E-07"
+        iyz="-2.79529033156295E-12"
+        izz="5.04290146759124E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz24_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz24_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz24"
+    type="revolute">
+    <origin
+      xyz="0.0056891 0.026394 -0.0002"
+      rpy="0 0 0" />
+    <parent
+      link="fz23_Link" />
+    <child
+      link="fz24_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz25_Link">
+    <inertial>
+      <origin
+        xyz="0.00297644010695114 -0.00793433108984773 -1.04454911381254E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.00435559867302523" />
+      <inertia
+        ixx="2.74467453828814E-07"
+        ixy="3.73354169241399E-08"
+        ixz="9.96459120675246E-12"
+        iyy="1.46865599402683E-07"
+        iyz="-1.59369412037933E-11"
+        izz="2.50729985549791E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz25_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz25_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz25"
+    type="fixed">
+    <origin
+      xyz="-0.00642512289446762 0.0220807109439676 0.00809999999999643"
+      rpy="0 0 0" />
+    <parent
+      link="fz24_Link" />
+    <child
+      link="fz25_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="fz31_Link">
+    <inertial>
+      <origin
+        xyz="3.46944695195361E-17 0 0.00889061986241679"
+        rpy="0 0 0" />
+      <mass
+        value="0.00121360929921686" />
+      <inertia
+        ixx="2.06990534269133E-08"
+        ixy="-6.53214829601372E-12"
+        ixz="5.44852685710921E-23"
+        iyy="4.95724179256259E-08"
+        iyz="-1.56736569719939E-24"
+        izz="3.46380536471337E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz31_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz31_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz31"
+    type="revolute">
+    <origin
+      xyz="-0.0127 -0.01175 0.1127"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="basez_link" />
+    <child
+      link="fz31_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5236"
+      upper="0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz32_Link">
+    <inertial>
+      <origin
+        xyz="-0.00230635436550868 -0.024546887246329 0.00970601769878913"
+        rpy="0 0 0" />
+      <mass
+        value="0.00970085709495209" />
+      <inertia
+        ixx="2.01206764506793E-06"
+        ixy="7.24905883190802E-09"
+        ixz="2.25496571418056E-11"
+        iyy="4.68755263351551E-07"
+        iyz="3.97846945209784E-10"
+        izz="2.28717289308103E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz32_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz32_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz32"
+    type="revolute">
+    <origin
+      xyz="0.0097 0 0.014"
+      rpy="3.1416 1.5708 0" />
+    <parent
+      link="fz31_Link" />
+    <child
+      link="fz32_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz33_Link">
+    <inertial>
+      <origin
+        xyz="0.00167719778740236 0.0171106598149136 0.00809931802813798"
+        rpy="0 0 0" />
+      <mass
+        value="0.00562429907357917" />
+      <inertia
+        ixx="7.47389909508924E-07"
+        ixy="-6.65996272978188E-08"
+        ixz="6.85392395706153E-12"
+        iyy="2.1598638936055E-07"
+        iyz="1.1469744240597E-11"
+        izz="8.96836484178209E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz33_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz33_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz33"
+    type="revolute">
+    <origin
+      xyz="0.0020038 -0.044999 0.0016102"
+      rpy="0.00022623 0 3.1416" />
+    <parent
+      link="fz32_Link" />
+    <child
+      link="fz33_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz34_Link">
+    <inertial>
+      <origin
+        xyz="-0.00474818242682288 0.0042680396063296 0.00809999951755613"
+        rpy="0 0 0" />
+      <mass
+        value="0.00479709005491605" />
+      <inertia
+        ixx="4.69802764695063E-07"
+        ixy="1.32182616135345E-07"
+        ixz="3.43103424235345E-13"
+        iyy="2.2221068419338E-07"
+        iyz="-2.80276293170484E-12"
+        izz="5.0429036734158E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz34_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz34_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz34"
+    type="revolute">
+    <origin
+      xyz="0.0054853 0.03558 0"
+      rpy="0 0 0" />
+    <parent
+      link="fz33_Link" />
+    <child
+      link="fz34_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz35_Link">
+    <inertial>
+      <origin
+        xyz="0.00282355930593195 -0.00799001063525345 -2.85317253618037E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.00435560069956694" />
+      <inertia
+        ixx="2.75853550242294E-07"
+        ixy="3.48583254240291E-08"
+        ixz="1.75457817411801E-11"
+        iyy="1.45479125623656E-07"
+        iyz="-3.99641518988374E-11"
+        izz="2.50729960536096E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz35_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz35_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz35"
+    type="fixed">
+    <origin
+      xyz="-0.0068671 0.021947 0.0081"
+      rpy="-0.00022606 0 0.039277" />
+    <parent
+      link="fz34_Link" />
+    <child
+      link="fz35_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="fz41_Link">
+    <inertial>
+      <origin
+        xyz="8.2572837456496E-16 -5.68989300120393E-16 0.00889061986241678"
+        rpy="0 0 0" />
+      <mass
+        value="0.00121360929921685" />
+      <inertia
+        ixx="2.06990519491167E-08"
+        ixy="-1.08986684790747E-21"
+        ixz="-3.07117145713156E-23"
+        iyy="4.95724194034223E-08"
+        iyz="3.9768160157453E-24"
+        izz="3.46380536471335E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz41_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz41_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz41"
+    type="revolute">
+    <origin
+      xyz="-0.0127 0.01175 0.1127"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="basez_link" />
+    <child
+      link="fz41_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5236"
+      upper="0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz42_Link">
+    <inertial>
+      <origin
+        xyz="-0.0024223943615205 -0.0218790022843764 0.00970418924875011"
+        rpy="0 0 0" />
+      <mass
+        value="0.0084627209033577" />
+      <inertia
+        ixx="1.45078116670361E-06"
+        ixy="-1.85887958439573E-08"
+        ixz="6.2725228166403E-12"
+        iyy="4.05772553484885E-07"
+        iyz="1.73232689183446E-12"
+        izz="1.69323532311485E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz42_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz42_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz42"
+    type="revolute">
+    <origin
+      xyz="0.0097 0 0.014"
+      rpy="3.1416 1.5708 0" />
+    <parent
+      link="fz41_Link" />
+    <child
+      link="fz42_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz43_Link">
+    <inertial>
+      <origin
+        xyz="0.00144556444580644 0.0125380783509271 0.00791209798733419"
+        rpy="0 0 0" />
+      <mass
+        value="0.00427370927137846" />
+      <inertia
+        ixx="3.63124223109181E-07"
+        ixy="-4.77064764036456E-08"
+        ixz="-4.57671956631534E-11"
+        iyy="1.52556575387702E-07"
+        iyz="-1.34818075099846E-10"
+        izz="4.6426684005389E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz43_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz43_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz43"
+    type="revolute">
+    <origin
+      xyz="0.0020036 -0.04 0.0018"
+      rpy="0 0 -3.1416" />
+    <parent
+      link="fz42_Link" />
+    <child
+      link="fz43_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz44_Link">
+    <inertial>
+      <origin
+        xyz="-0.0046615489862829 0.00436249932743207 0.00810000010907516"
+        rpy="0 0 0" />
+      <mass
+        value="0.00479708690079202" />
+      <inertia
+        ixx="4.75009026472187E-07"
+        ixy="1.27106630360442E-07"
+        ixz="2.70514541164931E-13"
+        iyy="2.17004046491612E-07"
+        iyz="-2.79529030767508E-12"
+        izz="5.04290146759031E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz44_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz44_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz44"
+    type="revolute">
+    <origin
+      xyz="0.0056891 0.026394 -0.0002"
+      rpy="0 0 0" />
+    <parent
+      link="fz43_Link" />
+    <child
+      link="fz44_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz45_Link">
+    <inertial>
+      <origin
+        xyz="0.00282354560718888 -0.00799001272647393 -1.0521582453904E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.00435559018942134" />
+      <inertia
+        ixx="2.75853690422666E-07"
+        ixy="3.4858408312528E-08"
+        ixz="9.82181470283482E-12"
+        iyy="1.45478879080313E-07"
+        iyz="-1.61338316881659E-11"
+        izz="2.50729739440494E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz45_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz45_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz45"
+    type="fixed">
+    <origin
+      xyz="-0.00642512289441233 0.0220807109439711 0.00809999999999604"
+      rpy="0 0 0.0192006778854375" />
+    <parent
+      link="fz44_Link" />
+    <child
+      link="fz45_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="fz51_Link">
+    <inertial>
+      <origin
+        xyz="5.33739719088544E-14 5.94524429686771E-14 0.00899061986241199"
+        rpy="0 0 0" />
+      <mass
+        value="0.00121360929921686" />
+      <inertia
+        ixx="2.06990534269133E-08"
+        ixy="6.53214829729292E-12"
+        ixz="-3.67710626650956E-23"
+        iyy="4.95724179256258E-08"
+        iyz="-4.64323103012143E-24"
+        izz="3.46380536471336E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz51_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz51_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz51"
+    type="revolute">
+    <origin
+      xyz="-0.0127999999999372 0.0352499999999372 0.112699999999874"
+      rpy="1.5707963267949 0 1.5707963267949" />
+    <parent
+      link="basez_link" />
+    <child
+      link="fz51_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.5236"
+      upper="0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz52_Link">
+    <inertial>
+      <origin
+        xyz="0.00246342248238006 0.0167158509285736 0.00966233264715678"
+        rpy="0 0 0" />
+      <mass
+        value="0.00657269018137149" />
+      <inertia
+        ixx="6.88453851344855E-07"
+        ixy="-2.29350346466209E-08"
+        ixz="-1.92686903909044E-11"
+        iyy="2.94941097625546E-07"
+        iyz="-1.74500028513996E-11"
+        izz="8.75198238359448E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz52_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz52_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz52"
+    type="revolute">
+    <origin
+      xyz="0.0097 0 0.0141"
+      rpy="3.1414 -1.5708 3.1416" />
+    <parent
+      link="fz51_Link" />
+    <child
+      link="fz52_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz53_Link">
+    <inertial>
+      <origin
+        xyz="0.00139189295249416 0.0105623722213472 0.00810000876525334"
+        rpy="0 0 0" />
+      <mass
+        value="0.00345238243726152" />
+      <inertia
+        ixx="2.49744964793813E-07"
+        ixy="-3.381184603362E-08"
+        ixz="-1.06923474569882E-11"
+        iyy="1.3459572382513E-07"
+        iyz="4.22671685070935E-12"
+        izz="3.07778556250795E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz53_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz53_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz53"
+    type="revolute">
+    <origin
+      xyz="-0.0020025 0.03 0.00155"
+      rpy="0 0 0" />
+    <parent
+      link="fz52_Link" />
+    <child
+      link="fz53_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz54_Link">
+    <inertial>
+      <origin
+        xyz="-0.00453320968862529 0.00449571825323433 0.00800000047783327"
+        rpy="0 0 0" />
+      <mass
+        value="0.00479708561028833" />
+      <inertia
+        ixx="4.82154239672455E-07"
+        ixy="1.19421786593094E-07"
+        ixz="1.88776072807518E-13"
+        iyy="2.09858766539007E-07"
+        iyz="-2.81174441443805E-12"
+        izz="5.04290144168833E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz54_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz54_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz54"
+    type="revolute">
+    <origin
+      xyz="0.0060847 0.022181 0.0001"
+      rpy="0 0 0" />
+    <parent
+      link="fz53_Link" />
+    <child
+      link="fz54_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fz55_Link">
+    <inertial>
+      <origin
+        xyz="0.00282352245481576 -0.00798999558295638 7.65747619230206E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.00435558936641852" />
+      <inertia
+        ixx="2.75853696457249E-07"
+        ixy="3.48582810672917E-08"
+        ixz="2.17708080580854E-12"
+        iyy="1.45478024665025E-07"
+        iyz="7.45351204291172E-12"
+        izz="2.5072931732183E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz55_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.298039215686275 0.298039215686275 0.298039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="fz55_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fz55"
+    type="fixed">
+    <origin
+      xyz="-0.0057827 0.022258 0.008"
+      rpy="0.00022625 0 -0.0097744" />
+    <parent
+      link="fz54_Link" />
+    <child
+      link="fz55_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

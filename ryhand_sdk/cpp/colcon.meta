@@ -1,0 +1,5 @@
+{
+    "defaults": {
+        "cmake-args": ["-DPYTHON_EXECUTABLE=/usr/bin/python3.8"]
+    }
+}
