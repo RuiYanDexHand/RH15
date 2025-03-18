@@ -26,7 +26,7 @@ extern "C" {
 pthread_t thread_id;
 volatile int  thread_go = 1;
 
-
+using namespace std::chrono_literals;
 
 std::string exec(const char* cmd) 
 {
@@ -84,22 +84,77 @@ namespace ruiyan::rh15
         si = 0;
         rh15msg = rh15_msg::msg::Rh15Msg();
         rh15cmd = rh15_cmd::msg::Rh15Cmd();
-        poly_coeff[0] = 0.000504;
-        poly_coeff[1] = -0.043255;
-        poly_coeff[2] = 2.561668;
-        poly_coeff[3] = 0.148494;
 
-        
-        std::string package_share_dir = get_pkg_directory("rh15_ctrl");
-        urdf_path = extract_path_before_delimiter( package_share_dir,"/install");
+        // 拇指
+        poly_coeff[0][0] = -0.000091;
+        poly_coeff[0][1] = 0.008974;
+        poly_coeff[0][2] = 0.836899;
+        poly_coeff[0][3] = 0.288791;
 
-        rh15msg.lr = this->declare_parameter("left_right", 0);
-        if( rh15msg.lr == 0 )
-            urdf_filename = urdf_path + "/hand_left.urdf";
-        else
-            urdf_filename = urdf_path + "/hand_right.urdf";
+        // 食指
+        poly_coeff[1][0] = -0.000091;
+        poly_coeff[1][1] = 0.008974;
+        poly_coeff[1][2] = 0.836899;
+        poly_coeff[1][3] = 0.288791;
 
-        RCLCPP_INFO(this->get_logger(), "urdf_path: %s.",urdf_filename.c_str());
+        // 中指
+        poly_coeff[2][0] = -0.000071;
+        poly_coeff[2][1] = 0.006173;
+        poly_coeff[2][2] = 0.882956;
+        poly_coeff[2][3] = 0.207410;
+
+        // 无名指
+        poly_coeff[3][0] = -0.000091;
+        poly_coeff[3][1] = 0.008974;
+        poly_coeff[3][2] = 0.836899;
+        poly_coeff[3][3] = 0.288791;
+
+        // 小指
+        poly_coeff[4][0] = -0.000110;
+        poly_coeff[4][1] = 0.011289;
+        poly_coeff[4][2] = 0.801033;
+        poly_coeff[4][3] = 0.363636;
+
+        // std::string package_share_dir = get_pkg_directory("rh15_ctrl");
+        // urdf_path = extract_path_before_delimiter( package_share_dir,"/install");
+
+        // 加载 URDF 模型
+        urdf_path = ament_index_cpp::get_package_share_directory("rh15_ctrl") + "/urdf";
+
+        urdf_filename_l = urdf_path + "/ruihand15z.urdf";
+        fingertip_l_[0] = "fz15";
+        fingertip_l_[1] = "fz25";
+        fingertip_l_[2] = "fz35";
+        fingertip_l_[3] = "fz45";
+        fingertip_l_[4] = "fz55";
+
+        pinocchio::urdf::buildModel(urdf_filename_l, model_l_);
+        data_l_ = pinocchio::Data(model_l_);
+
+        urdf_filename_r = urdf_path + "/ruihand15y.urdf";
+        fingertip_r_[0] = "fy15";
+        fingertip_r_[1] = "fy25";
+        fingertip_r_[2] = "fy35";
+        fingertip_r_[3] = "fy45";
+        fingertip_r_[4] = "fy55";
+
+        pinocchio::urdf::buildModel(urdf_filename_r, model_r_);
+        data_r_ = pinocchio::Data(model_r_);
+
+
+        // 初始化关节状态，确保尺寸与模型匹配
+        q_.resize(model_l_.nq);
+        q_.setZero();
+
+        q_fk_.resize(model_l_.nq);
+        q_fk_.setZero();
+
+        q_ik_.resize(model_l_.nq);
+        q_ik_.setZero();
+
+        RCLCPP_INFO(this->get_logger(), "joint_num: %d.",model_l_.nq);
+        RCLCPP_INFO(this->get_logger(), "urdf_l_path: %s.",urdf_filename_l.c_str());
+        RCLCPP_INFO(this->get_logger(), "urdf_r_path: %s.",urdf_filename_r.c_str());
 
 
         // interfaces_ptr_ = std::make_shared<InterfacesThread>(urdf_urdf_filenamepath,this->declare_parameter("handhand_can_id", "can0"), end_type);
@@ -113,19 +168,290 @@ namespace ruiyan::rh15
         if (control_type == "normal")
         {
             // 创建发布器 - 状态
-            ryhand_state_publisher_ = this->create_publisher<rh15_msg::msg::Rh15Msg>(pub_name, 1);
+            ryhand_state_publisher_ = this->create_publisher<rh15_msg::msg::Rh15Msg>(pub_name, 10);
 
             // 创建订阅器 - 命令
             ryhand_cmd_subscriber_ = this->create_subscription<rh15_cmd::msg::Rh15Cmd>( sub_name, 10, std::bind(&rh15_ctrl::CmdCallback, this, std::placeholders::_1) );
 
-            rclcpp::Publisher<rh15_msg::msg::Rh15Msg>::SharedPtr ryhand_state_publisher_;
-            rclcpp::Subscription<rh15_cmd::msg::Rh15Cmd>::SharedPtr ryhand_cmd_subscriber_;
-            
             // 创建定时器 10ms 
             timer_ = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&rh15_ctrl::PubState, this));
         }
+
+        // // 创建服务
+        callback_group_service_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
+
+        server_rh15fk_ = this->create_service<rh15_cmd::srv::Rh15fk>("rh15_fk", 
+            std::bind(&rh15_ctrl::rh15fk_callback, this, std::placeholders::_1, std::placeholders::_2) , 
+            rmw_qos_profile_services_default, callback_group_service_ );
+
+        server_rh15ik_ = this->create_service<rh15_cmd::srv::Rh15ik>("rh15_ik", 
+            std::bind(&rh15_ctrl::rh15ik_callback, this, std::placeholders::_1, std::placeholders::_2), 
+            rmw_qos_profile_services_default, callback_group_service_ );
+    
+
+
         
     }
+
+
+    // 运动学正解
+    void rh15_ctrl::rh15fk_callback(const rh15_cmd::srv::Rh15fk::Request::SharedPtr request, const rh15_cmd::srv::Rh15fk::Response::SharedPtr response)
+    {
+        RCLCPP_INFO(this->get_logger(), "rh15fk");
+
+        if( request->lr )
+        {
+            model_fk_ = model_r_;
+            data_fk_ = data_r_;
+            fingertip[0] = fingertip_r_[0];
+            fingertip[1] = fingertip_r_[1];
+            fingertip[2] = fingertip_r_[2];
+            fingertip[3] = fingertip_r_[3];
+            fingertip[4] = fingertip_r_[4];
+        }
+        else
+        {
+            model_fk_ = model_l_;
+            data_fk_ = data_l_;
+            fingertip[0] = fingertip_l_[0];
+            fingertip[1] = fingertip_l_[1];
+            fingertip[2] = fingertip_l_[2];
+            fingertip[3] = fingertip_l_[3];
+            fingertip[4] = fingertip_l_[4];
+        }
+
+        q_fk_.resize(model_fk_.nq);
+        q_fk_.setZero();
+        for (int i = 0; i < 20; i += 4 )
+        {
+            q_fk_[ i/4*5 + 0 ] = request->j_ang[ i + 0 ];
+            q_fk_[ i/4*5 + 1 ] = request->j_ang[ i + 1 ];
+            q_fk_[ i/4*5 + 2 ] = request->j_ang[ i + 2 ];
+            q_fk_[ i/4*5 + 3 ] = request->j_ang[ i + 3 ];
+        }
+
+        // Perform the forward kinematics over the kinematic tree
+        forwardKinematics(model_fk_, data_fk_, q_fk_);
+    
+        // 获取末 关节坐标系的位姿
+        pinocchio::SE3 end_effector_pose1 = data_fk_.oMi[ model_fk_.getJointId( fingertip[0] ) ];
+        pinocchio::SE3 end_effector_pose2 = data_fk_.oMi[ model_fk_.getJointId( fingertip[1] ) ];
+        pinocchio::SE3 end_effector_pose3 = data_fk_.oMi[ model_fk_.getJointId( fingertip[2] ) ];
+        pinocchio::SE3 end_effector_pose4 = data_fk_.oMi[ model_fk_.getJointId( fingertip[3] ) ];
+        pinocchio::SE3 end_effector_pose5 = data_fk_.oMi[ model_fk_.getJointId( fingertip[4] ) ];
+
+        // 创建平移向量
+        Eigen::Vector3d translation(request->x_base, request->y_base, request->z_base);
+
+        // 创建旋转矩阵
+        Eigen::Matrix3d rotation;
+        rotation = Eigen::AngleAxisd(request->roll_base, Eigen::Vector3d::UnitX()) *
+                Eigen::AngleAxisd(request->pitch_base, Eigen::Vector3d::UnitY()) *
+                Eigen::AngleAxisd(request->yaw_base, Eigen::Vector3d::UnitZ());
+    
+        // 设置基坐标系空间姿态
+        pinocchio::SE3 base_to_world(rotation, translation);
+
+        // 计算末端执行器相对于世界坐标系的位姿
+        pinocchio::SE3 end1_effector_to_world = base_to_world * end_effector_pose1;
+        pinocchio::SE3 end2_effector_to_world = base_to_world * end_effector_pose2;
+        pinocchio::SE3 end3_effector_to_world = base_to_world * end_effector_pose3;
+        pinocchio::SE3 end4_effector_to_world = base_to_world * end_effector_pose4;
+        pinocchio::SE3 end5_effector_to_world = base_to_world * end_effector_pose5;
+
+        // 构建一个 SE3 向量
+        std::vector<pinocchio::SE3> end_effector_poses = {
+            end1_effector_to_world,
+            end2_effector_to_world,
+            end3_effector_to_world,
+            end4_effector_to_world,
+            end5_effector_to_world
+        };
+
+
+        for (int i = 0; i < 5; i++)
+        {
+            response->x[i] = end_effector_poses[i].translation().x();
+            response->y[i] = end_effector_poses[i].translation().y();
+            response->z[i] = end_effector_poses[i].translation().z();
+            Eigen::Quaterniond quat(end_effector_poses[i].rotation());
+            response->w[i] = quat.w();
+            response->i[i] = quat.x();
+            response->j[i] = quat.y();
+            response->k[i] = quat.z();
+            response->roll[i]  = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[0];
+            response->pitch[i] = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[1];
+            response->yaw[i]   = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[2];
+        }
+
+    }
+
+
+    // 运动学逆解
+    void rh15_ctrl::rh15ik_callback(const rh15_cmd::srv::Rh15ik::Request::SharedPtr request, const rh15_cmd::srv::Rh15ik::Response::SharedPtr response)
+    {
+        RCLCPP_INFO(this->get_logger(), "rh15ik");
+
+        Eigen::Vector3d target_pos[5];
+        Eigen::Matrix3d target_rot[5];
+        Eigen::Quaterniond target_quat[5];
+        pinocchio::SE3 target_poses[5];
+
+        if (request->lr)
+        {
+            model_ik_ = model_r_;
+            data_ik_ = data_r_;
+            fingertip[0] = fingertip_r_[0];
+            fingertip[1] = fingertip_r_[1];
+            fingertip[2] = fingertip_r_[2];
+            fingertip[3] = fingertip_r_[3];
+            fingertip[4] = fingertip_r_[4];
+        }
+        else
+        {
+            model_ik_ = model_l_;
+            data_ik_ = data_l_;
+            fingertip[0] = fingertip_l_[0];
+            fingertip[1] = fingertip_l_[1];
+            fingertip[2] = fingertip_l_[2];
+            fingertip[3] = fingertip_l_[3];
+            fingertip[4] = fingertip_l_[4];
+        }
+
+        // 创建平移向量
+        Eigen::Vector3d translation(request->x_base, request->y_base, request->z_base);
+        // 创建旋转矩阵
+        Eigen::Matrix3d rotation;
+        rotation = Eigen::AngleAxisd(request->roll_base, Eigen::Vector3d::UnitX()) *
+                    Eigen::AngleAxisd(request->pitch_base, Eigen::Vector3d::UnitY()) *
+                    Eigen::AngleAxisd(request->yaw_base, Eigen::Vector3d::UnitZ());
+        // 设置基坐标系空间姿态
+        pinocchio::SE3 base_to_world(rotation, translation);
+
+        // 构建目标姿态
+        for (int i = 0; i < 5; i++)
+        {
+            Eigen::Vector3d pos(request->x[i], request->y[i], request->z[i]);
+
+            rotation = Eigen::AngleAxisd(request->roll[i], Eigen::Vector3d::UnitX()) *
+                        Eigen::AngleAxisd(request->pitch[i], Eigen::Vector3d::UnitY()) *
+                        Eigen::AngleAxisd(request->yaw[i], Eigen::Vector3d::UnitZ());
+
+            pinocchio::SE3 pose(rotation, pos);
+            target_pos[i] = pose.translation();
+            target_rot[i] = rotation;
+            target_quat[i] = Eigen::Quaterniond(pose.rotation());
+            target_poses[i] = pose;
+        }
+
+        #if 1
+
+        // 计算 target_pose 相对于 base 坐标系的位姿
+        for (int i = 0; i < 5; i++)
+        {
+            target_poses[i] = base_to_world.actInv(target_poses[i]);
+        }
+
+        #endif
+
+        // 定义每个手指的关节索引（示例为单指，需扩展为多指）
+        std::vector<int> active_joints  = { 2, 7, 12, 17, 22 }; // 主动关节 q2 的模型索引
+        std::vector<int> passive_joints = { 3, 8, 13, 18, 23 }; // 随动关节 q3 的模型索引
+
+        // 定义关节限制
+        Eigen::VectorXd q_min = model_ik_.lowerPositionLimit;
+        Eigen::VectorXd q_max = model_ik_.upperPositionLimit;
+
+        double tolerance = 1e-2;
+        int max_iter = 100;
+        int iter = 0;
+        double dt = 1e-1;
+        double damping = 1e-2; // 定义阻尼项
+        q_ik_ = q_;
+
+        // 迭代求解 IK
+        for (iter = 0; iter < max_iter; ++iter)
+        {
+            pinocchio::forwardKinematics(model_ik_, data_ik_, q_ik_);
+
+            Eigen::VectorXd total_error(6 * 5);             // 5 个手指，每个手指 6 个自由度
+            Eigen::MatrixXd total_J(6 * 5, model_ik_.nv);   // 5 个手指，每个手指 6 个自由度
+
+            for (size_t finger_idx = 0; finger_idx < 5; ++finger_idx)
+            {
+                const auto& tip_name = fingertip[finger_idx];
+                const auto& target_pose = target_poses[finger_idx];
+
+                pinocchio::SE3 current_pose = data_ik_.oMi[model_ik_.getJointId(tip_name)];
+                pinocchio::Motion error = pinocchio::log6(target_pose.actInv(current_pose));
+                Eigen::VectorXd e = error.toVector();
+
+                pinocchio::Data::Matrix6x J(6, model_ik_.nv);
+                J.setZero();
+                pinocchio::computeFrameJacobian(model_ik_, data_ik_, q_ik_, model_ik_.getJointId(tip_name), pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, J);
+
+                // 合并随动关节的雅可比到主动关节
+                for (size_t i = 0; i < active_joints.size(); ++i)
+                {
+                    int active = active_joints[i];
+                    int passive = passive_joints[i];
+                    J.col(active) += J.col(passive); // 叠加雅可比
+                    J.col(passive).setZero();        // 随动关节不再独立
+                }
+
+                total_error.segment<6>(finger_idx * 6) = e;
+                total_J.block<6, Eigen::Dynamic>(finger_idx * 6, 0, 6, model_ik_.nv) = J;
+            }
+
+            if (total_error.norm() < tolerance) break;
+
+            // 伪逆求解（带阻尼项）
+            Eigen::MatrixXd J_pinv = (total_J.transpose() * total_J + 
+                                damping * Eigen::MatrixXd::Identity(model_ik_.nv, model_ik_.nv)).ldlt().solve(total_J.transpose());
+            Eigen::VectorXd dq = -J_pinv * total_error * dt;
+
+            // 更新关节角度
+            q_ik_ = pinocchio::integrate(model_ik_, q_ik_, dq);
+
+            // 裁剪主动关节角度
+            for (int j = 0; j < model_ik_.nv; ++j)
+            {
+                q_ik_[j] = std::clamp(q_ik_[j], q_min[j], q_max[j]);
+            }
+
+            // 同步随动关节（例如 q3 = q2）
+            for (size_t i = 0; i < active_joints.size(); ++i)
+            {
+                int active = active_joints[i];
+                int passive = passive_joints[i];
+                // 强制同步
+                q_ik_[passive] = deg_to_rad(evaluatePolynomial(poly_coeff[i], 3, rad_to_deg(q_ik_[active])));
+            }
+
+            // 再次裁剪（确保同步后的随动关节不越界）
+            for (int j = 0; j < model_ik_.nv; ++j)
+            {
+                q_ik_[j] = std::clamp(q_ik_[j], q_min[j], q_max[j]);
+            }
+        }
+        // q_ = q_ik_;
+
+        // 输出迭代次数和差值
+        // RCLCPP_INFO(this->get_logger(), "Iteration: %d, Error Norm: %f", iter, total_error.norm());
+
+        // 返回结果
+        for (int i = 0; i < q_ik_.size(); i += 5 )
+        {
+            response->j_ang[ i/5 * 4 + 0 ] = q_ik_[ i + 0 ];
+            response->j_ang[ i/5 * 4 + 1 ] = q_ik_[ i + 1 ];
+            response->j_ang[ i/5 * 4 + 2 ] = q_ik_[ i + 2 ];
+            response->j_ang[ i/5 * 4 + 3 ] = q_ik_[ i + 3 ];
+        }
+
+
+    }
+
+
 
     void rh15_ctrl::UpdataMotor( void )
     {
@@ -167,115 +493,287 @@ namespace ruiyan::rh15
     }
 
 
-    void rh15_ctrl::CmdCallback( const rh15_cmd::msg::Rh15Cmd::SharedPtr msg )
+    void rh15_ctrl::CmdCallback(const rh15_cmd::msg::Rh15Cmd::SharedPtr msg)
     {
         rh15_cmd::msg::Rh15Cmd cmd = *msg;
-        int p1,p2,p3,p4,p5,p6; 
-
-        rh15msg.lr = cmd.lr;  // left_or_right
-        if( rh15msg.lr == 0 ) urdf_filename = urdf_path + "/hand_left.urdf";
-        else urdf_filename = urdf_path + "/hand_right.urdf";
-
-        if( memcmp(&rh15cmd, &cmd, sizeof(rh15_cmd::msg::Rh15Cmd)) )
+        int p1, p2, p3, p4, p5, p6;
+    
+        rh15msg.lr = cmd.lr; // left_or_right
+    
+        if (memcmp(&rh15cmd, &cmd, sizeof(rh15_cmd::msg::Rh15Cmd)))
         {
-            for(int i = 0; i < 15; i++)
+            for (int i = 0; i < 15; i++)
             {
                 sutServoDataW[i].stuCmd.usTp = cmd.m_pos[i];
                 sutServoDataW[i].stuCmd.usTv = cmd.m_spd[i];
                 sutServoDataW[i].stuCmd.usTc = cmd.m_curlimit[i];
-            }  
-
+            }
+    
             switch (cmd.mode)
             {
-                // raw cmd
-                case 0:
-                    UpdataMotor();  
-                    break;
-
-                // rad cmd
-                case 1:
-                    for( int i = 0; i < 20; i++ )
+                // end pos cmd
+                case 2:
+                {
+                    Eigen::Vector3d target_pos[5];
+                    Eigen::Matrix3d target_rot[5];
+                    Eigen::Quaterniond target_quat[5];
+                    pinocchio::SE3 target_poses[5];
+    
+                    if (rh15msg.lr)
                     {
-                        if( i%4 == 3 )
+                        model_ = model_r_;
+                        data_ = data_r_;
+                        fingertip[0] = fingertip_r_[0];
+                        fingertip[1] = fingertip_r_[1];
+                        fingertip[2] = fingertip_r_[2];
+                        fingertip[3] = fingertip_r_[3];
+                        fingertip[4] = fingertip_r_[4];
+                    }
+                    else
+                    {
+                        model_ = model_l_;
+                        data_ = data_l_;
+                        fingertip[0] = fingertip_l_[0];
+                        fingertip[1] = fingertip_l_[1];
+                        fingertip[2] = fingertip_l_[2];
+                        fingertip[3] = fingertip_l_[3];
+                        fingertip[4] = fingertip_l_[4];
+                    }
+    
+                    // 设置基坐标系空间姿态
+                    rh15msg.x_base = cmd.x_base;
+                    rh15msg.y_base = cmd.y_base;
+                    rh15msg.z_base = cmd.z_base;
+                    rh15msg.roll_base = cmd.roll_base;
+                    rh15msg.pitch_base = cmd.pitch_base;
+                    rh15msg.yaw_base = cmd.yaw_base;
+    
+                    // 创建平移向量
+                    Eigen::Vector3d translation(cmd.x_base, cmd.y_base, cmd.z_base);
+                    // 创建旋转矩阵
+                    Eigen::Matrix3d rotation;
+                    rotation = Eigen::AngleAxisd(cmd.roll_base, Eigen::Vector3d::UnitX()) *
+                                Eigen::AngleAxisd(cmd.pitch_base, Eigen::Vector3d::UnitY()) *
+                                Eigen::AngleAxisd(cmd.yaw_base, Eigen::Vector3d::UnitZ());
+                    // 设置基坐标系空间姿态
+                    pinocchio::SE3 base_to_world(rotation, translation);
+    
+                    // 构建目标姿态
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Eigen::Vector3d pos(cmd.x[i], cmd.y[i], cmd.z[i]);
+    
+                        rotation = Eigen::AngleAxisd(cmd.roll[i], Eigen::Vector3d::UnitX()) *
+                                    Eigen::AngleAxisd(cmd.pitch[i], Eigen::Vector3d::UnitY()) *
+                                    Eigen::AngleAxisd(cmd.yaw[i], Eigen::Vector3d::UnitZ());
+    
+                        pinocchio::SE3 pose(rotation, pos);
+                        target_pos[i] = pose.translation();
+                        target_rot[i] = rotation;
+                        target_quat[i] = Eigen::Quaterniond(pose.rotation());
+                        target_poses[i] = pose;
+                    }
+    
+                    #if 1
+    
+                    // 计算 target_pose 相对于 base 坐标系的位姿
+                    for (int i = 0; i < 5; i++)
+                    {
+                        target_poses[i] = base_to_world.actInv(target_poses[i]);
+                    }
+    
+                    #endif
+    
+                    // 定义每个手指的关节索引（示例为单指，需扩展为多指）
+                    std::vector<int> active_joints  = { 2,  7, 12, 17, 22 }; // 主动关节 q2 的模型索引
+                    std::vector<int> passive_joints = { 3,  8, 13, 18, 23 }; // 随动关节 q3 的模型索引
+    
+                    // 定义关节限制
+                    Eigen::VectorXd q_min = model_.lowerPositionLimit;
+                    Eigen::VectorXd q_max = model_.upperPositionLimit;
+    
+                    double tolerance = 1e-2;
+                    int max_iter = 1000;
+                    double dt = 1e-1;
+                    double damping = 1e-2; // 定义阻尼项
+                    Eigen::VectorXd q_ik = q_;
+    
+                    // 迭代求解 IK
+                    for (int iter = 0; iter < max_iter; ++iter)
+                    {
+                        pinocchio::forwardKinematics(model_, data_, q_ik);
+    
+                        Eigen::VectorXd total_error(6 * 5); // 5 个手指，每个手指 6 个自由度
+                        Eigen::MatrixXd total_J(6 * 5, model_.nv); // 5 个手指，每个手指 6 个自由度
+    
+                        for (size_t finger_idx = 0; finger_idx < 5; ++finger_idx)
                         {
-                            p1 = map_rad_to_value_full_range( cmd.j_ang[ i/4 * 4 + 0 ] );
-                            p2 = map_rad90_to_value( cmd.j_ang[ i/4 * 4 + 1 ] );
-                            p3 = map_rad75_to_value( cmd.j_ang[ i/4 * 4 + 2 ] );
-                            p4 = map_rad75_to_value( cmd.j_ang[ i/4 * 4 + 3 ] );
+                            const auto& tip_name = fingertip[finger_idx];
+                            const auto& target_pose = target_poses[finger_idx];
+    
+                            pinocchio::SE3 current_pose = data_.oMi[model_.getJointId(tip_name)];
+                            pinocchio::Motion error = pinocchio::log6(target_pose.actInv(current_pose));
+                            Eigen::VectorXd e = error.toVector();
+    
+                            pinocchio::Data::Matrix6x J(6, model_.nv);
+                            J.setZero();
+                            pinocchio::computeFrameJacobian(model_, data_, q_ik, model_.getJointId(tip_name), pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, J);
+    
+                            // 合并随动关节的雅可比到主动关节
+                            for (size_t i = 0; i < active_joints.size(); ++i)
+                            {
+                                int active = active_joints[i];
+                                int passive = passive_joints[i];
+                                J.col(active) += J.col(passive); // 叠加雅可比
+                                J.col(passive).setZero();        // 随动关节不再独立
+                            }
+    
+                            total_error.segment<6>(finger_idx * 6) = e;
+                            total_J.block<6, Eigen::Dynamic>(finger_idx * 6, 0, 6, model_.nv) = J;
+                        }
+    
+                        if (total_error.norm() < tolerance) break;
+    
+                        // 伪逆求解（带阻尼项）
+                        Eigen::MatrixXd J_pinv = (total_J.transpose() * total_J +
+                                                    damping * Eigen::MatrixXd::Identity(model_.nv, model_.nv))
+                                                    .ldlt().solve(total_J.transpose());
+                        Eigen::VectorXd dq = -J_pinv * total_error * dt;
+    
+                        // 更新关节角度
+                        q_ik = pinocchio::integrate(model_, q_ik, dq);
+    
+                        // 裁剪主动关节角度
+                        for (int j = 0; j < model_.nv; ++j)
+                        {
+                            q_ik[j] = std::clamp(q_ik[j], q_min[j], q_max[j]);
+                        }
+    
+                        // 同步随动关节（例如 q3 = q2）
+                        for (size_t i = 0; i < active_joints.size(); ++i)
+                        {
+                            int active = active_joints[i];
+                            int passive = passive_joints[i];
+                            // 强制同步
+                            q_ik[passive] = deg_to_rad(evaluatePolynomial(poly_coeff[i], 3, rad_to_deg(q_ik[active])));
+                        }
+    
+                        // 再次裁剪（确保同步后的随动关节不越界）
+                        for (int j = 0; j < model_.nv; ++j)
+                        {
+                            q_ik[j] = std::clamp(q_ik[j], q_min[j], q_max[j]);
+                        }
+                    }
+    
+                    q_ = q_ik;
+    
+                    for ( int i = 0; i < q_.size(); i += 5 )
+                    {
+                        cmd.j_ang[ i/5 * 4 + 0 ] = q_[ i + 0 ];
+                        cmd.j_ang[ i/5 * 4 + 1 ] = q_[ i + 1 ];
+                        cmd.j_ang[ i/5 * 4 + 2 ] = q_[ i + 2 ];
+                        cmd.j_ang[ i/5 * 4 + 3 ] = q_[ i + 3 ];
+                    }
+    
+                    for (int i = 0; i < 20; i++)
+                    {
+                        if (i % 4 == 3)
+                        {
+                            p1 = map_rad_to_value_full_range(cmd.j_ang[i / 4 * 4 + 0]);
+                            p2 = map_rad90_to_value(cmd.j_ang[i / 4 * 4 + 1]);
+                            p3 = map_rad75_to_value(cmd.j_ang[i / 4 * 4 + 2]);
+                            p4 = map_rad75_to_value(cmd.j_ang[i / 4 * 4 + 3]);
                             (void)p4;
-
-                            if( p1 > 4095/4 ) p1 = 4095/4;
-                            if( p1 < -4095/4 ) p1 = -4095/4;
-
-                            // if( !cmd.lr ) 
+    
+                            if (p1 > 4095 / 4) p1 = 4095 / 4;
+                            if (p1 < -4095 / 4) p1 = -4095 / 4;
+    
+                            // if( !cmd.lr )
                             // {
-                                p5 = p2 - p1/2;
-                                p6 = p2 + p1/2;
+                            p5 = p2 - p1 / 2;
+                            p6 = p2 + p1 / 2;
                             // }
                             // else
                             // {
-                            //     p5 = p2 + p1/2;
-                            //     p6 = p2 - p1/2; 
+                            //     p5 = p2 + p1 / 2;
+                            //     p6 = p2 - p1 / 2;
                             // }
-
-                            if( p5 > 4095 ) p5 = 4095;
-                            else if( p5 < 0 ) p5 = 0;
-
-                            if( p6 > 4095 ) p6 = 4095;
-                            else if( p6 < 0 ) p6 = 0;
-
-                            if( p3 > 4095 ) p3 = 4095;
-                            else if( p3 < 0 ) p3 = 0;
-
-                            sutServoDataW[ (i/4 *3) + 0 ].stuCmd.usTp = p5;
-                            sutServoDataW[ (i/4 *3) + 1 ].stuCmd.usTp = p6;
-                            sutServoDataW[ (i/4 *3) + 2 ].stuCmd.usTp = p3;
+    
+                            if (p5 > 4095) p5 = 4095;
+                            else if (p5 < 0) p5 = 0;
+    
+                            if (p6 > 4095) p6 = 4095;
+                            else if (p6 < 0) p6 = 0;
+    
+                            if (p3 > 4095) p3 = 4095;
+                            else if (p3 < 0) p3 = 0;
+    
+                            sutServoDataW[(i / 4 * 3) + 0].stuCmd.usTp = p5;
+                            sutServoDataW[(i / 4 * 3) + 1].stuCmd.usTp = p6;
+                            sutServoDataW[(i / 4 * 3) + 2].stuCmd.usTp = p3;
                         }
                     }
-
-                    UpdataMotor();    
-                    break;
-
-                // end pos cmd    
-                case 2:
-
-                    // float64 x_base
-                    // float64 y_base
-                    // float64 z_base
-
-                    // float64 roll_base
-                    // float64 pitch_base
-                    // float64 yaw_base
-
-                    // float64[5] x
-                    // float64[5] y
-                    // float64[5] z
-
-                    // float64[5] roll
-                    // float64[5] pitch
-                    // float64[5] yaw
-
-                    // double end_pos[6] = {msg->end_pos[0], msg->end_pos[1], msg->end_pos[2], msg->end_pos[3], msg->end_pos[4], msg->end_pos[5]};
-                    // Eigen::Isometry3d transform = solve::Xyzrpy2Isometry(end_pos);
-                    // interfaces_ptr_->setEndPose(transform);
-                    // std::vector<double> joint_positions = {0, 0, 0, 0, 0, 0};
-            
-                    // for (int i = 0; i < 6; i++)
-                    // {
-                    //     joint_positions[i] = msg->joint_pos[i];
-                    // }
-
-                    break;
-
-                default:
-                    break;
+                    UpdataMotor();
+                }
+                break;
+    
+                // rad cmd
+                case 1:
+                {
+                    for (int i = 0; i < 20; i++)
+                    {
+                        if (i % 4 == 3)
+                        {
+                            p1 = map_rad_to_value_full_range(cmd.j_ang[i / 4 * 4 + 0]);
+                            p2 = map_rad90_to_value(cmd.j_ang[i / 4 * 4 + 1]);
+                            p3 = map_rad75_to_value(cmd.j_ang[i / 4 * 4 + 2]);
+                            p4 = map_rad75_to_value(cmd.j_ang[i / 4 * 4 + 3]);
+                            (void)p4;
+    
+                            if (p1 > 4095 / 4) p1 = 4095 / 4;
+                            if (p1 < -4095 / 4) p1 = -4095 / 4;
+    
+                            // if( !cmd.lr )
+                            // {
+                            p5 = p2 - p1 / 2;
+                            p6 = p2 + p1 / 2;
+                            // }
+                            // else
+                            // {
+                            //     p5 = p2 + p1 / 2;
+                            //     p6 = p2 - p1 / 2;
+                            // }
+    
+                            if (p5 > 4095) p5 = 4095;
+                            else if (p5 < 0) p5 = 0;
+    
+                            if (p6 > 4095) p6 = 4095;
+                            else if (p6 < 0) p6 = 0;
+    
+                            if (p3 > 4095) p3 = 4095;
+                            else if (p3 < 0) p3 = 0;
+    
+                            sutServoDataW[(i / 4 * 3) + 0].stuCmd.usTp = p5;
+                            sutServoDataW[(i / 4 * 3) + 1].stuCmd.usTp = p6;
+                            sutServoDataW[(i / 4 * 3) + 2].stuCmd.usTp = p3;
+                        }
+                    }
+                    UpdataMotor();
+                }
+                break;
+    
+                // raw cmd
+                case 0:
+                {
+                    UpdataMotor();
+                }
+                break;    
+    
+                default: break;
             }
-
+    
             rh15cmd = cmd;
-            
         }
-
-
     }
 
    
@@ -326,13 +824,59 @@ namespace ruiyan::rh15
                 rh15msg.j_ang[ (i/3 * 4) + 1] = value_to_rad90(pcom);
                 p = rh15msg.m_pos[i];
                 rh15msg.j_ang[ (i/3 * 4) + 2] = value_to_rad75(p);
-                rh15msg.j_ang[ (i/3 * 4) + 3] = value_to_rad75(p); // deg_to_rad( evaluatePolynomial( poly_coeff, 3,  rad_to_deg( value_to_rad75(p) ) ) ); 
+                rh15msg.j_ang[ (i/3 * 4) + 3] = deg_to_rad( evaluatePolynomial( poly_coeff[i/3], 3,  rad_to_deg( value_to_rad75(p) ) ) ); 
                 break;
 
             default:
                 break;
             }
         }
+
+
+ 
+
+        // 正解FK
+        if( rh15msg.lr )
+        {
+            model_ = model_r_;
+            data_ = data_r_;
+            fingertip[0] = fingertip_r_[0];
+            fingertip[1] = fingertip_r_[1];
+            fingertip[2] = fingertip_r_[2];
+            fingertip[3] = fingertip_r_[3];
+            fingertip[4] = fingertip_r_[4];
+        }
+        else
+        {
+            model_ = model_l_;
+            data_ = data_l_;
+            fingertip[0] = fingertip_l_[0];
+            fingertip[1] = fingertip_l_[1];
+            fingertip[2] = fingertip_l_[2];
+            fingertip[3] = fingertip_l_[3];
+            fingertip[4] = fingertip_l_[4];
+        }
+
+
+        for (int i = 0; i < 20; i += 4 )
+        {
+            q_[ i/4*5 + 0 ] = rh15msg.j_ang[ i + 0 ];
+            q_[ i/4*5 + 1 ] = rh15msg.j_ang[ i + 1 ];
+            q_[ i/4*5 + 2 ] = rh15msg.j_ang[ i + 2 ];
+            q_[ i/4*5 + 3 ] = rh15msg.j_ang[ i + 3 ];
+        }
+
+
+        // Perform the forward kinematics over the kinematic tree
+        forwardKinematics(model_, data_, q_);
+
+        // 获取末 关节坐标系的位姿
+        pinocchio::SE3 end_effector_pose1 = data_.oMi[ model_.getJointId( fingertip[0] ) ];
+        pinocchio::SE3 end_effector_pose2 = data_.oMi[ model_.getJointId( fingertip[1] ) ];
+        pinocchio::SE3 end_effector_pose3 = data_.oMi[ model_.getJointId( fingertip[2] ) ];
+        pinocchio::SE3 end_effector_pose4 = data_.oMi[ model_.getJointId( fingertip[3] ) ];
+        pinocchio::SE3 end_effector_pose5 = data_.oMi[ model_.getJointId( fingertip[4] ) ];
+
 
         rh15msg.x_base = rh15cmd.x_base;
         rh15msg.y_base = rh15cmd.y_base;
@@ -341,15 +885,51 @@ namespace ruiyan::rh15
         rh15msg.pitch_base = rh15cmd.pitch_base;
         rh15msg.yaw_base = rh15cmd.yaw_base;
 
+        // 创建平移向量
+        Eigen::Vector3d translation(rh15msg.x_base, rh15msg.y_base, rh15msg.z_base);
+
+        // 创建旋转矩阵
+        Eigen::Matrix3d rotation;
+        rotation = Eigen::AngleAxisd(rh15msg.roll_base, Eigen::Vector3d::UnitX()) *
+                Eigen::AngleAxisd(rh15msg.pitch_base, Eigen::Vector3d::UnitY()) *
+                Eigen::AngleAxisd(rh15msg.yaw_base, Eigen::Vector3d::UnitZ());
+    
+        // 设置基坐标系空间姿态
+        pinocchio::SE3 base_to_world(rotation, translation);
+
+
+        // 计算末端执行器相对于世界坐标系的位姿
+        pinocchio::SE3 end1_effector_to_world = base_to_world * end_effector_pose1;
+        pinocchio::SE3 end2_effector_to_world = base_to_world * end_effector_pose2;
+        pinocchio::SE3 end3_effector_to_world = base_to_world * end_effector_pose3;
+        pinocchio::SE3 end4_effector_to_world = base_to_world * end_effector_pose4;
+        pinocchio::SE3 end5_effector_to_world = base_to_world * end_effector_pose5;
+
+        // 构建一个 SE3 向量
+        std::vector<pinocchio::SE3> end_effector_poses = {
+            end1_effector_to_world,
+            end2_effector_to_world,
+            end3_effector_to_world,
+            end4_effector_to_world,
+            end5_effector_to_world
+        };
+
+
         for (int i = 0; i < 5; i++)
         {
-            rh15msg.x[i] = 0;
-            rh15msg.y[i] = 0;  
-            rh15msg.z[i] = 0;
-    
-            rh15msg.roll[i]   = 0;
-            rh15msg.pitch[i]  = 0;
-            rh15msg.yaw[i]    = 0;
+            rh15msg.x[i] = end_effector_poses[i].translation().x();
+            rh15msg.y[i] = end_effector_poses[i].translation().y();
+            rh15msg.z[i] = end_effector_poses[i].translation().z();
+            Eigen::Quaterniond quat(end_effector_poses[i].rotation());
+            rh15msg.w[i] = quat.w();
+            rh15msg.i[i] = quat.x();
+            rh15msg.j[i] = quat.y();
+            rh15msg.k[i] = quat.z();
+
+            rh15msg.roll[i]  = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[0];
+            rh15msg.pitch[i] = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[1];
+            rh15msg.yaw[i]   = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[2];
+
         }
 
         // 发布消息
@@ -589,9 +1169,12 @@ int main(int argc, char *argv[])
     RyParam_ClearFault( &stuServoCan, 0, 1 );
 
     auto node =  std::make_shared<ruiyan::rh15::rh15_ctrl>("rh15");
-    rclcpp::spin(node);
-    rclcpp::shutdown();
+    rclcpp::executors::MultiThreadedExecutor  exector;
+    exector.add_node(node);
+    exector.spin();
 
+    // 关闭 ROS2
+    rclcpp::shutdown();
 
     thread_go = 0;
 
@@ -606,51 +1189,3 @@ int main(int argc, char *argv[])
 
 
 
-
-
-
-
-
-
-
-
-
-#if 0
-
-#include <rclcpp/rclcpp.hpp>
-
-/*
-    创建一个类节点，名字叫做 Rh15,继承自Node.
-*/
-class Rh15 : public rclcpp::Node
-{
-
-public:
-    // 构造函数,有一个参数为节点名称
-    Rh15(std::string name) : Node(name)
-    {
-        // 打印一句自我介绍
-        RCLCPP_INFO(this->get_logger(), "hello %s.",name.c_str());
-    }
-
-private:
-   
-};
-
-
-int main(int argc, char **argv)
-{
-    rclcpp::init(argc, argv);
-
-    /*产生一个rh15_ctrl的节点*/
-    auto node = std::make_shared<Rh15>("rh15_ctrl");
-    
-    /* 运行节点，并检测退出信号*/
-    rclcpp::spin(node);
-
-
-    rclcpp::shutdown();
-    return 0;
-}
-
-#endif

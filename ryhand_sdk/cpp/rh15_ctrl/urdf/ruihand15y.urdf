@@ -1,0 +1,1707 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="ruihand15y">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.00034779 0.0010036 0.053889"
+        rpy="0 0 0" />
+      <mass
+        value="0.22757" />
+      <inertia
+        ixx="0.00023382"
+        ixy="-8.1011E-06"
+        ixz="1.0913E-06"
+        iyy="8.9524E-05"
+        iyz="3.1993E-07"
+        izz="0.00020457" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="fy11_Link">
+    <inertial>
+      <origin
+        xyz="0 0 0.0088906"
+        rpy="0 0 0" />
+      <mass
+        value="0.0012136" />
+      <inertia
+        ixx="4.9572E-08"
+        ixy="-1.0588E-22"
+        ixz="1.9903E-24"
+        iyy="2.0699E-08"
+        iyz="3.3893E-23"
+        izz="3.4638E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy11_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy11_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy11"
+    type="revolute">
+    <origin
+      xyz="0.043359 0.027829 0.0199"
+      rpy="0 0 0.43633" />
+    <parent
+      link="base_link" />
+    <child
+      link="fy11_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.52"
+      upper="0.52"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy12_Link">
+    <inertial>
+      <origin
+        xyz="0.021993 -0.0024291 -1.1713E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0086805" />
+      <inertia
+        ixx="4.1951E-07"
+        ixy="1.7086E-08"
+        ixz="-6.9223E-12"
+        iyy="1.4839E-06"
+        iyz="1.9167E-11"
+        izz="1.726E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy12_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy12_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy12"
+    type="revolute">
+    <origin
+      xyz="0 0 0.014"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="fy11_Link" />
+    <child
+      link="fy12_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy13_Link">
+    <inertial>
+      <origin
+        xyz="0.012699 -0.0015734 2.2007E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.004764" />
+      <inertia
+        ixx="2.0251E-07"
+        ixy="5.4005E-08"
+        ixz="-1.3332E-11"
+        iyy="4.4876E-07"
+        iyz="4.0365E-11"
+        izz="5.2042E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy13_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy13_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy13"
+    type="revolute">
+    <origin
+      xyz="0.04 0.0020036 0"
+      rpy="0 0 0" />
+    <parent
+      link="fy12_Link" />
+    <child
+      link="fy13_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy14_Link">
+    <inertial>
+      <origin
+        xyz="0.0045329 0.0047296 -2.8778E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0050177" />
+      <inertia
+        ixx="2.4226E-07"
+        ixy="-1.3239E-07"
+        ixz="1.5954E-11"
+        iyy="5.1062E-07"
+        iyz="6.6956E-12"
+        izz="5.2392E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy14_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy14_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy14"
+    type="revolute">
+    <origin
+      xyz="0.026394 -0.0056891 0"
+      rpy="0 0 0" />
+    <parent
+      link="fy13_Link" />
+    <child
+      link="fy14_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+    <mimic joint="fy13" multiplier="1.0" offset="0.0"/>
+  </joint>
+  <link
+    name="fy15_Link">
+    <inertial>
+      <origin
+        xyz="0.0029496 1.3003E-06 -0.0080211"
+        rpy="0 0 0" />
+      <mass
+        value="0.0047183" />
+      <inertia
+        ixx="3.129E-07"
+        ixy="-3.6277E-11"
+        ixz="3.8619E-08"
+        iyy="2.6818E-07"
+        iyz="1.2827E-11"
+        izz="1.7581E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy15_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy15_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy15"
+    type="revolute">
+    <origin
+      xyz="0.022081 0.0064251 0"
+      rpy="-1.5708 0 -1.5708" />
+    <parent
+      link="fy14_Link" />
+    <child
+      link="fy15_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy21_Link">
+    <inertial>
+      <origin
+        xyz="-2.7756E-17 0 0.0088906"
+        rpy="0 0 0" />
+      <mass
+        value="0.0012136" />
+      <inertia
+        ixx="2.0699E-08"
+        ixy="-1.089E-21"
+        ixz="4.0663E-23"
+        iyy="4.9572E-08"
+        iyz="4.6108E-24"
+        izz="3.4638E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy21_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy21_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy21"
+    type="revolute">
+    <origin
+      xyz="-0.0126999999999952 0.0352500000000061 0.112700000000002"
+      rpy="1.57079632679494 0 1.5707963267949" />
+    <parent
+      link="base_link" />
+    <child
+      link="fy21_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.52"
+      upper="0.52"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy22_Link">
+    <inertial>
+      <origin
+        xyz="0.0024225 0.021879 4.2161E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.0084628" />
+      <inertia
+        ixx="1.4508E-06"
+        ixy="-1.8584E-08"
+        ixz="-6.565E-12"
+        iyy="4.0578E-07"
+        iyz="-1.3467E-12"
+        izz="1.6932E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy22_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy22_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy22"
+    type="revolute">
+    <origin
+      xyz="0 0 0.014"
+      rpy="3.14159265358979 -1.5707963267949 3.14159265358979" />
+    <parent
+      link="fy21_Link" />
+    <child
+      link="fy22_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy23_Link">
+    <inertial>
+      <origin
+        xyz="0.0014456 0.012538 -8.7892E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0042737" />
+      <inertia
+        ixx="3.6312E-07"
+        ixy="-4.7706E-08"
+        ixz="-4.5853E-11"
+        iyy="1.5256E-07"
+        iyz="-1.3476E-10"
+        izz="4.6427E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy23_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy23_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy23"
+    type="revolute">
+    <origin
+      xyz="-0.00200360996649845 0.0399998193383676 9.99999999999612E-05"
+      rpy="0 0 0" />
+    <parent
+      link="fy22_Link" />
+    <child
+      link="fy23_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy24_Link">
+    <inertial>
+      <origin
+        xyz="-0.0046615 0.0043625 1.1155E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.0047971" />
+      <inertia
+        ixx="4.7501E-07"
+        ixy="1.2711E-07"
+        ixz="2.7029E-13"
+        iyy="2.17E-07"
+        iyz="-2.7956E-12"
+        izz="5.0429E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy24_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy24_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy24"
+    type="revolute">
+    <origin
+      xyz="0.00568908816388666 0.0263938302613229 -0.000100000000000072"
+      rpy="0 0 0" />
+    <parent
+      link="fy23_Link" />
+    <child
+      link="fy24_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+    <mimic joint="fy23" multiplier="1.0" offset="0.0"/>
+  </joint>
+  <link
+    name="fy25_Link">
+    <inertial>
+      <origin
+        xyz="0.0028236 1.0488E-06 -0.00799"
+        rpy="0 0 0" />
+      <mass
+        value="0.0043556" />
+      <inertia
+        ixx="2.7585E-07"
+        ixy="-9.7206E-12"
+        ixz="3.4858E-08"
+        iyy="2.5073E-07"
+        iyz="1.6118E-11"
+        izz="1.4548E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy25_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy25_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy25"
+    type="revolute">
+    <origin
+      xyz="-0.0064251 0.022081 0"
+      rpy="-1.5708 0 0.019201" />
+    <parent
+      link="fy24_Link" />
+    <child
+      link="fy25_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy31_Link">
+    <inertial>
+      <origin
+        xyz="5.5511E-17 1.3878E-17 0.0088906"
+        rpy="0 0 0" />
+      <mass
+        value="0.0012136" />
+      <inertia
+        ixx="2.0699E-08"
+        ixy="-6.5321E-12"
+        ixz="6.7122E-23"
+        iyy="4.9572E-08"
+        iyz="-2.1769E-24"
+        izz="3.4638E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy31_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy31_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy31"
+    type="revolute">
+    <origin
+      xyz="-0.0126999999999952 0.0117499999999966 0.112700000000002"
+      rpy="1.57079632679494 0 1.5707963267949" />
+    <parent
+      link="base_link" />
+    <child
+      link="fy31_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.52"
+      upper="0.52"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy32_Link">
+    <inertial>
+      <origin
+        xyz="0.0023064 0.024549 4.6415E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0097009" />
+      <inertia
+        ixx="2.0121E-06"
+        ixy="7.2491E-09"
+        ixz="-2.419E-11"
+        iyy="4.6876E-07"
+        iyz="1.3544E-11"
+        izz="2.2872E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy32_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy32_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy32"
+    type="revolute">
+    <origin
+      xyz="0 0 0.014"
+      rpy="3.14136641920501 -1.5707963267949 3.14136641920501" />
+    <parent
+      link="fy31_Link" />
+    <child
+      link="fy32_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy33_Link">
+    <inertial>
+      <origin
+        xyz="0.0016772 0.017111 9.9312E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0056243" />
+      <inertia
+        ixx="7.4739E-07"
+        ixy="-6.6599E-08"
+        ixz="6.8633E-12"
+        iyy="2.1599E-07"
+        iyz="1.1516E-11"
+        izz="8.9684E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy33_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy33_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy33"
+    type="revolute">
+    <origin
+      xyz="-0.00200382227807512 0.044999829958322 -9.9999999999989E-05"
+      rpy="0 0 0" />
+    <parent
+      link="fy32_Link" />
+    <child
+      link="fy33_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy34_Link">
+    <inertial>
+      <origin
+        xyz="-0.0047482 0.004268 -4.9875E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.0047971" />
+      <inertia
+        ixx="4.698E-07"
+        ixy="1.3218E-07"
+        ixz="3.4247E-13"
+        iyy="2.2221E-07"
+        iyz="-2.803E-12"
+        izz="5.0429E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy34_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy34_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy34"
+    type="revolute">
+    <origin
+      xyz="0.00548526287974448 0.0355796555792786 0.000100000000000017"
+      rpy="0 0 0" />
+    <parent
+      link="fy33_Link" />
+    <child
+      link="fy34_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+    <mimic joint="fy33" multiplier="1.0" offset="0.0"/>
+  </joint>
+  <link
+    name="fy35_Link">
+    <inertial>
+      <origin
+        xyz="0.0028236 1.0447E-06 -0.00799"
+        rpy="0 0 0" />
+      <mass
+        value="0.0043556" />
+      <inertia
+        ixx="2.7585E-07"
+        ixy="-9.671E-12"
+        ixz="3.4858E-08"
+        iyy="2.5073E-07"
+        iyz="1.6188E-11"
+        izz="1.4548E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy35_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy35_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy35"
+    type="revolute">
+    <origin
+      xyz="-0.0068671 0.021947 0"
+      rpy="-1.5708 0 0.039277" />
+    <parent
+      link="fy34_Link" />
+    <child
+      link="fy35_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy41_Link">
+    <inertial>
+      <origin
+        xyz="-2.7756E-17 0 0.0088906"
+        rpy="0 0 0" />
+      <mass
+        value="0.0012136" />
+      <inertia
+        ixx="2.0699E-08"
+        ixy="-1.0905E-21"
+        ixz="3.9368E-23"
+        iyy="4.9572E-08"
+        iyz="5.3063E-24"
+        izz="3.4638E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy41_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy41_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy41"
+    type="revolute">
+    <origin
+      xyz="-0.0126999999999952 -0.0117499999999939 0.112700000000002"
+      rpy="1.57079632679494 0 1.5707963267949" />
+    <parent
+      link="base_link" />
+    <child
+      link="fy41_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.52"
+      upper="0.52"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy42_Link">
+    <inertial>
+      <origin
+        xyz="0.0024224 0.021879 4.193E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.0084628" />
+      <inertia
+        ixx="1.4508E-06"
+        ixy="-1.8587E-08"
+        ixz="-6.3265E-12"
+        iyy="4.0577E-07"
+        iyz="-1.647E-12"
+        izz="1.6932E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy42_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy42_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy42"
+    type="revolute">
+    <origin
+      xyz="0 0 0.014"
+      rpy="3.14159265358979 -1.5707963267949 3.14159265358979" />
+    <parent
+      link="fy41_Link" />
+    <child
+      link="fy42_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy43_Link">
+    <inertial>
+      <origin
+        xyz="0.0014456 0.012538 -8.7885E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0042737" />
+      <inertia
+        ixx="3.6312E-07"
+        ixy="-4.7707E-08"
+        ixz="-4.5732E-11"
+        iyy="1.5256E-07"
+        iyz="-1.3502E-10"
+        izz="4.6427E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy43_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy43_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy43"
+    type="revolute">
+    <origin
+      xyz="-0.0020036099664984 0.0399998193383672 9.99999999999612E-05"
+      rpy="0 0 0" />
+    <parent
+      link="fy42_Link" />
+    <child
+      link="fy43_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy44_Link">
+    <inertial>
+      <origin
+        xyz="-0.0046615 0.0043625 1.1155E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.0047971" />
+      <inertia
+        ixx="4.7501E-07"
+        ixy="1.2711E-07"
+        ixz="2.7029E-13"
+        iyy="2.17E-07"
+        iyz="-2.7956E-12"
+        izz="5.0429E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy44_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy44_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy44"
+    type="revolute">
+    <origin
+      xyz="0.00568908816388666 0.0263938302613228 -9.9999999999989E-05"
+      rpy="0 0 0" />
+    <parent
+      link="fy43_Link" />
+    <child
+      link="fy44_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+    <mimic joint="fy43" multiplier="1.0" offset="0.0"/>
+  </joint>
+  <link
+    name="fy45_Link">
+    <inertial>
+      <origin
+        xyz="-0.0079343 1.0499E-06 -0.0029764"
+        rpy="0 0 0" />
+      <mass
+        value="0.0043556" />
+      <inertia
+        ixx="1.4687E-07"
+        ixy="1.596E-11"
+        ixz="-3.7335E-08"
+        iyy="2.5073E-07"
+        iyz="1.0145E-11"
+        izz="2.7447E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy45_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy45_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy45"
+    type="revolute">
+    <origin
+      xyz="-0.0064251 0.022081 0"
+      rpy="-1.5708 0 1.5708" />
+    <parent
+      link="fy44_Link" />
+    <child
+      link="fy45_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy51_Link">
+    <inertial>
+      <origin
+        xyz="0 0 0.0088906"
+        rpy="0 0 0" />
+      <mass
+        value="0.0012136" />
+      <inertia
+        ixx="2.0699E-08"
+        ixy="6.5321E-12"
+        ixz="1.0578E-23"
+        iyy="4.9572E-08"
+        iyz="-1.7252E-24"
+        izz="3.4638E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy51_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy51_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy51"
+    type="revolute">
+    <origin
+      xyz="-0.0127 -0.03525 0.1127"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="fy51_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-0.52"
+      upper="0.52"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy52_Link">
+    <inertial>
+      <origin
+        xyz="0.0024634 0.016716 -3.7667E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.0065727" />
+      <inertia
+        ixx="6.8845E-07"
+        ixy="-2.2935E-08"
+        ixz="-1.9269E-11"
+        iyy="2.9494E-07"
+        iyz="-1.745E-11"
+        izz="8.752E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy52_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy52_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy52"
+    type="revolute">
+    <origin
+      xyz="0 0 0.014"
+      rpy="3.1414 -1.5708 3.1416" />
+    <parent
+      link="fy51_Link" />
+    <child
+      link="fy52_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.57"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy53_Link">
+    <inertial>
+      <origin
+        xyz="0.0013919 0.010562 0.00010001"
+        rpy="0 0 0" />
+      <mass
+        value="0.0034524" />
+      <inertia
+        ixx="2.4974E-07"
+        ixy="-3.3812E-08"
+        ixz="-1.0692E-11"
+        iyy="1.346E-07"
+        iyz="4.2266E-12"
+        izz="3.0778E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy53_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy53_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy53"
+    type="revolute">
+    <origin
+      xyz="-0.0020025 0.03 -0.00015"
+      rpy="0 0 0" />
+    <parent
+      link="fy52_Link" />
+    <child
+      link="fy53_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="fy54_Link">
+    <inertial>
+      <origin
+        xyz="-0.004382 0.0044973 4.8042E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.0047971" />
+      <inertia
+        ixx="4.8215E-07"
+        ixy="1.1942E-07"
+        ixz="1.8855E-13"
+        iyy="2.0986E-07"
+        iyz="-2.812E-12"
+        izz="5.0429E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy54_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy54_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy54"
+    type="revolute">
+    <origin
+      xyz="0.0059335 0.022179 0.0001"
+      rpy="0 0 0" />
+    <parent
+      link="fy53_Link" />
+    <child
+      link="fy54_Link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="0"
+      upper="1.31"
+      effort="0"
+      velocity="0" />
+    <mimic joint="fy53" multiplier="1.0" offset="0.0"/>
+  </joint>
+  <link
+    name="fy55_Link">
+    <inertial>
+      <origin
+        xyz="0.0028235 -7.7866E-07 -0.00799"
+        rpy="0 0 0" />
+      <mass
+        value="0.0043556" />
+      <inertia
+        ixx="2.7585E-07"
+        ixy="-2.0334E-12"
+        ixz="3.4858E-08"
+        iyy="2.5073E-07"
+        iyz="-7.5419E-12"
+        izz="1.4548E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy55_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.9 0.9 0.9 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://ruihand15y/meshes/fy55_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fy55"
+    type="revolute">
+    <origin
+      xyz="-0.0056315 0.022259 0"
+      rpy="-1.5706 0 -0.0097744" />
+    <parent
+      link="fy54_Link" />
+    <child
+      link="fy55_Link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  
+  
+  
+  <!-- 在所有 link 和 joint 定义之后添加 transmission -->
+  <transmission name="trans_fy11">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy11">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy11">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy12">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy12">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy12">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy13">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy13">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy13">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy14">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy14">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy14">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy21">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy21">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy21">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy22">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy22">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy22">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy23">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy23">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy23">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy24">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy24">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy24">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy31">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy31">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy31">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy32">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy32">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy32">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy33">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy33">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy33">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy34">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy34">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy34">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy41">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy41">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy41">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy42">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy42">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy42">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy43">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy43">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy43">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy44">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy44">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy44">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy51">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy51">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy51">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy52">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy52">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy52">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy53">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy53">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy53">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  <transmission name="trans_fy54">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="fy54">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="actuator_fy54">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

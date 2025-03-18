@@ -30,6 +30,8 @@ find_package(rosidl_default_generators REQUIRED)
 # 声明消息文件
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Rh15Cmd.msg"
+  "srv/Rh15fk.srv"
+  "srv/Rh15ik.srv"
   DEPENDENCIES 
   std_msgs
   sensor_msgs

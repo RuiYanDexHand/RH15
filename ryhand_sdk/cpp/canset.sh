@@ -1,17 +1,25 @@
 # sudo ip link set can0 up type can bitrate 1000000
 #  板子烧了slcan固件之后，接入ubuntu系统中，不需要任何驱动，都可以查看到设备： 
 
+
+sudo apt install can-utils
+sudo apt install ros-$ROS_DISTRO-pinocchio
+
+
 sudo modprobe peak_usb
 sudo modprobe can
 sudo modprobe can-raw
 sudo modprobe can-gw
 sudo modprobe slcan
 sudo modprobe vcan
+ls /dev/ttyACM*    
 sudo slcand -o -c -s8 /dev/ttyACM0 can0
 sudo ip link set can0 up type can bitrate 1000000
 sudo ip link set can0 txqueuelen 1000
 sudo ifconfig can0 up
+
 sudo ifconfig can0 txqueuelen 1000
+ip -d -s link show can0
 	
 # ls /dev/ttyACM*       (x代表可能是 0，1，2，3，.......)
 # ttyACMx 设备映射为 can 设备，比如我这里 ttyACM0 映射为 can0，并设置速率:
@@ -42,8 +50,5 @@ sudo ifconfig can0 txqueuelen 1000
 # -s6 = 500k
 # -s7 = 750k
 # -s8 = 1M
-
-
-
 
 
