@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <sched.h>
 #include <stdlib.h>
+#include <bitset>
 
 extern "C" {
    #include <ryhandlib_port.h>
@@ -141,6 +142,8 @@ namespace ruiyan::rh15
         pinocchio::urdf::buildModel(urdf_filename_r, model_r_);
         data_r_ = pinocchio::Data(model_r_);
 
+        
+
 
         // 初始化关节状态，确保尺寸与模型匹配
         q_.resize(model_l_.nq);
@@ -152,9 +155,14 @@ namespace ruiyan::rh15
         q_ik_.resize(model_l_.nq);
         q_ik_.setZero();
 
+        q_iik_.resize(model_l_.nq);
+        q_iik_.setZero();
+
+
         RCLCPP_INFO(this->get_logger(), "joint_num: %d.",model_l_.nq);
         RCLCPP_INFO(this->get_logger(), "urdf_l_path: %s.",urdf_filename_l.c_str());
         RCLCPP_INFO(this->get_logger(), "urdf_r_path: %s.",urdf_filename_r.c_str());
+        RCLCPP_INFO(this->get_logger(), "end: %s. id is %d", fingertip_r_[0].c_str(), model_r_.getJointId( fingertip_r_[0] )); 
 
 
         // interfaces_ptr_ = std::make_shared<InterfacesThread>(urdf_urdf_filenamepath,this->declare_parameter("handhand_can_id", "can0"), end_type);
@@ -188,10 +196,10 @@ namespace ruiyan::rh15
             std::bind(&rh15_ctrl::rh15ik_callback, this, std::placeholders::_1, std::placeholders::_2), 
             rmw_qos_profile_services_default, callback_group_service_ );
     
-
-
         
     }
+
+    
 
 
     // 运动学正解
@@ -203,21 +211,21 @@ namespace ruiyan::rh15
         {
             model_fk_ = model_r_;
             data_fk_ = data_r_;
-            fingertip[0] = fingertip_r_[0];
-            fingertip[1] = fingertip_r_[1];
-            fingertip[2] = fingertip_r_[2];
-            fingertip[3] = fingertip_r_[3];
-            fingertip[4] = fingertip_r_[4];
+            fingertip_fk[0] = fingertip_r_[0];
+            fingertip_fk[1] = fingertip_r_[1];
+            fingertip_fk[2] = fingertip_r_[2];
+            fingertip_fk[3] = fingertip_r_[3];
+            fingertip_fk[4] = fingertip_r_[4];
         }
         else
         {
             model_fk_ = model_l_;
             data_fk_ = data_l_;
-            fingertip[0] = fingertip_l_[0];
-            fingertip[1] = fingertip_l_[1];
-            fingertip[2] = fingertip_l_[2];
-            fingertip[3] = fingertip_l_[3];
-            fingertip[4] = fingertip_l_[4];
+            fingertip_fk[0] = fingertip_l_[0];
+            fingertip_fk[1] = fingertip_l_[1];
+            fingertip_fk[2] = fingertip_l_[2];
+            fingertip_fk[3] = fingertip_l_[3];
+            fingertip_fk[4] = fingertip_l_[4];
         }
 
         q_fk_.resize(model_fk_.nq);
@@ -234,11 +242,11 @@ namespace ruiyan::rh15
         forwardKinematics(model_fk_, data_fk_, q_fk_);
     
         // 获取末 关节坐标系的位姿
-        pinocchio::SE3 end_effector_pose1 = data_fk_.oMi[ model_fk_.getJointId( fingertip[0] ) ];
-        pinocchio::SE3 end_effector_pose2 = data_fk_.oMi[ model_fk_.getJointId( fingertip[1] ) ];
-        pinocchio::SE3 end_effector_pose3 = data_fk_.oMi[ model_fk_.getJointId( fingertip[2] ) ];
-        pinocchio::SE3 end_effector_pose4 = data_fk_.oMi[ model_fk_.getJointId( fingertip[3] ) ];
-        pinocchio::SE3 end_effector_pose5 = data_fk_.oMi[ model_fk_.getJointId( fingertip[4] ) ];
+        pinocchio::SE3 end_effector_pose1 = data_fk_.oMi[ model_fk_.getJointId( fingertip_fk[0] ) ];
+        pinocchio::SE3 end_effector_pose2 = data_fk_.oMi[ model_fk_.getJointId( fingertip_fk[1] ) ];
+        pinocchio::SE3 end_effector_pose3 = data_fk_.oMi[ model_fk_.getJointId( fingertip_fk[2] ) ];
+        pinocchio::SE3 end_effector_pose4 = data_fk_.oMi[ model_fk_.getJointId( fingertip_fk[3] ) ];
+        pinocchio::SE3 end_effector_pose5 = data_fk_.oMi[ model_fk_.getJointId( fingertip_fk[4] ) ];
 
         // 创建平移向量
         Eigen::Vector3d translation(request->x_base, request->y_base, request->z_base);
@@ -284,38 +292,244 @@ namespace ruiyan::rh15
             response->yaw[i]   = end_effector_poses[i].rotation().eulerAngles(0, 1, 2)[2];
         }
 
+
+        req_fk = *request;
+        res_fk = *response;
+
+
     }
 
+
+#if 1
 
     // 运动学逆解
     void rh15_ctrl::rh15ik_callback(const rh15_cmd::srv::Rh15ik::Request::SharedPtr request, const rh15_cmd::srv::Rh15ik::Response::SharedPtr response)
     {
         RCLCPP_INFO(this->get_logger(), "rh15ik");
 
+        if (request->lr)
+        {
+            model_ik_ = model_r_;
+            data_ik_ = data_r_;
+            fingertip_ik[0] = fingertip_r_[0];
+            fingertip_ik[1] = fingertip_r_[1];
+            fingertip_ik[2] = fingertip_r_[2];
+            fingertip_ik[3] = fingertip_r_[3];
+            fingertip_ik[4] = fingertip_r_[4];
+        }
+        else
+        {
+            model_ik_ = model_l_;
+            data_ik_ = data_l_;
+            fingertip_ik[0] = fingertip_l_[0];
+            fingertip_ik[1] = fingertip_l_[1];
+            fingertip_ik[2] = fingertip_l_[2];
+            fingertip_ik[3] = fingertip_l_[3];
+            fingertip_ik[4] = fingertip_l_[4];
+        }
+
+        rh15ik( model_ik_, data_ik_, q_ik_, fingertip_ik, request, response);
+        
+    }
+
+
+    void rh15_ctrl::rh15ik( pinocchio::Model& model, pinocchio::Data& data, Eigen::VectorXd &q_ik, std::string ftip[5], const rh15_cmd::srv::Rh15ik::Request::SharedPtr request, const rh15_cmd::srv::Rh15ik::Response::SharedPtr response)
+    {
+
         Eigen::Vector3d target_pos[5];
         Eigen::Matrix3d target_rot[5];
-        Eigen::Quaterniond target_quat[5];
+        pinocchio::SE3 target_poses[5];
+
+        // 创建基坐标系位姿
+        Eigen::Vector3d translation(request->x_base, request->y_base, request->z_base);
+        Eigen::Matrix3d rotation;
+        rotation = Eigen::AngleAxisd(request->roll_base, Eigen::Vector3d::UnitX()) *
+                Eigen::AngleAxisd(request->pitch_base, Eigen::Vector3d::UnitY()) *
+                Eigen::AngleAxisd(request->yaw_base, Eigen::Vector3d::UnitZ());
+        pinocchio::SE3 base_to_world(rotation, translation);
+
+        // 构建目标姿态
+        for (int i = 0; i < 5; i++)
+        {
+            Eigen::Vector3d pos(request->x[i], request->y[i], request->z[i]);
+            rotation = Eigen::AngleAxisd(request->roll[i], Eigen::Vector3d::UnitX()) *
+                    Eigen::AngleAxisd(request->pitch[i], Eigen::Vector3d::UnitY()) *
+                    Eigen::AngleAxisd(request->yaw[i], Eigen::Vector3d::UnitZ());
+
+            // Eigen::Vector3d pos(res_fk.x[i], res_fk.y[i], res_fk.z[i]);
+            // rotation = Eigen::AngleAxisd(res_fk.roll[i], Eigen::Vector3d::UnitX()) *
+            //     Eigen::AngleAxisd(res_fk.pitch[i], Eigen::Vector3d::UnitY()) *
+            //     Eigen::AngleAxisd(res_fk.yaw[i], Eigen::Vector3d::UnitZ());
+
+
+            pinocchio::SE3 pose(rotation, pos);
+            target_pos[i] = pose.translation();
+            target_rot[i] = rotation;
+            target_poses[i] = base_to_world.actInv(pose); // 转换为基坐标系下的位姿
+        }
+
+
+        // 灵巧手参数配置
+        const std::vector<std::pair<int, int>> coupled_joints = {{2,3}, {7,8}, {12,13}, {17,18}, {22,23}};
+        const std::vector<int> fixed_joints = {4,9,14,19,24};
+        Eigen::VectorXd minq = model.lowerPositionLimit;
+        Eigen::VectorXd maxq = model.upperPositionLimit;
+
+
+        // 初始化关节角度
+        q_ik = pinocchio::neutral(model);
+        const double eps = 1e-4;    // 收敛误差阈值
+        const int IT_MAX = 50;      // 最大迭代次数
+        const double DT = 0.5;      // 时间步长
+        const double damp = 1e-6;   // 阻尼系数
+
+        // 定义逆运动学求解函数
+        auto solve_finger_ik = [&](int finger_idx, const pinocchio::SE3& oMdes, int target_joint_id, Eigen::VectorXd& q_ik, bool * success) 
+        {
+            // 为每个线程创建独立的 Pinocchio 数据对象，避免线程冲突
+            pinocchio::Data local_data(model);
+            pinocchio::Data::Matrix6x J(6, model.nv);
+            J.setZero();
+            Eigen::VectorXd v(model.nv);
+            Eigen::Matrix<double, 6, 1> err;
+
+            // 迭代求解
+            for (int i = 0;; i++)
+            {
+                pinocchio::forwardKinematics(model, local_data, q_ik);
+                const pinocchio::SE3 iMd = local_data.oMi[target_joint_id].actInv(oMdes);
+                err = pinocchio::log6(iMd).toVector();
+
+                if (err.norm() < eps)
+                {
+                    *success = true;
+                    break;
+                }
+                if (i >= IT_MAX)
+                {
+                    *success = false;
+                    break;
+                }
+
+                pinocchio::computeJointJacobian(model, local_data, q_ik, target_joint_id, J);
+                for (auto [master, slave] : coupled_joints)
+                {
+                    J.col(master) += J.col(slave);
+                    J.col(slave).setZero();
+                }
+                for (int id : fixed_joints) J.col(id).setZero();
+
+                pinocchio::Data::Matrix6 Jlog;
+                pinocchio::Jlog6(iMd.inverse(), Jlog);
+                J = -Jlog * J;
+
+                pinocchio::Data::Matrix6 JJt = J * J.transpose();
+                JJt.diagonal().array() += damp;
+                v.noalias() = -J.transpose() * JJt.ldlt().solve(err);
+
+                for (auto [master, slave] : coupled_joints) v[slave] = v[master];
+                for (int id : fixed_joints) v[id] = 0.0;
+
+                q_ik = pinocchio::integrate(model, q_ik, v * DT);
+                for (int i = 0; i < q_ik.size(); i++)
+                    q_ik[i] = std::clamp(q_ik[i], minq[i], maxq[i]);
+                for (auto [master, slave] : coupled_joints) q_ik[slave] = q_ik[master];
+                for (int id : fixed_joints) q_ik[id] = 0.0;
+            }
+        };
+
+        // 创建线程并行求解
+        std::vector<std::thread> threads;
+        bool successes[5];
+        std::vector<Eigen::VectorXd> q_ik_per_finger(5, q_ik); // 为每个手指分配独立的关节角度向量
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+        for (int finger_idx = 0; finger_idx < 5; ++finger_idx)
+        {
+            int target_joint_id = model.getJointId( ftip[finger_idx] );
+            const pinocchio::SE3& oMdes = target_poses[finger_idx];
+            threads.emplace_back( solve_finger_ik, finger_idx, std::cref(oMdes), target_joint_id, std::ref(q_ik_per_finger[finger_idx]), &successes[finger_idx] );
+        }
+
+        // 等待所有线程完成
+        for (auto& thread : threads)
+        {
+            thread.join();
+        }
+
+        // 合并结果到 q_ik
+        for (int finger_idx = 0; finger_idx < 5; ++finger_idx)
+        {
+            int offset = finger_idx * 5; // 假设每个手指有5个关节
+            for (int j = 0; j < 5 && offset + j < q_ik.size(); ++j)
+            {
+                q_ik[offset + j] = q_ik_per_finger[finger_idx][offset + j];
+            }
+        }
+
+        // 计算执行时间
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+
+        // 检查求解成功状态
+        char finger_done = 0;
+        for (int i = 0; i < 5; ++i)
+        {
+            if (successes[i])
+            {
+                finger_done |= (1 << i);
+            }
+        }
+
+        // 输出结果
+        // std::cout << "Execution time: " << duration << " ms" << std::endl;
+        // std::cout << "finger_done (binary): " << std::bitset<5>(finger_done) << std::endl;
+
+        // 返回结果
+        for (int i = 0; i < q_ik.size(); i += 5)
+        {
+            response->j_ang[i/5 * 4 + 0] = q_ik[i + 0];
+            response->j_ang[i/5 * 4 + 1] = q_ik[i + 1];
+            response->j_ang[i/5 * 4 + 2] = q_ik[i + 2];
+            response->j_ang[i/5 * 4 + 3] = q_ik[i + 3];
+        }
+
+        // req_ik = *request;
+        // res_ik = *response;
+
+    }
+
+
+
+    #else
+
+    void rh15_ctrl::rh15ik_callback(const rh15_cmd::srv::Rh15ik::Request::SharedPtr request, const rh15_cmd::srv::Rh15ik::Response::SharedPtr response)
+    {
+        RCLCPP_INFO(this->get_logger(), "rh15ik");
+
+        Eigen::Vector3d target_pos[5];
+        Eigen::Matrix3d target_rot[5];
         pinocchio::SE3 target_poses[5];
 
         if (request->lr)
         {
             model_ik_ = model_r_;
             data_ik_ = data_r_;
-            fingertip[0] = fingertip_r_[0];
-            fingertip[1] = fingertip_r_[1];
-            fingertip[2] = fingertip_r_[2];
-            fingertip[3] = fingertip_r_[3];
-            fingertip[4] = fingertip_r_[4];
+            fingertip_ik[0] = fingertip_r_[0];
+            fingertip_ik[1] = fingertip_r_[1];
+            fingertip_ik[2] = fingertip_r_[2];
+            fingertip_ik[3] = fingertip_r_[3];
+            fingertip_ik[4] = fingertip_r_[4];
         }
         else
         {
             model_ik_ = model_l_;
             data_ik_ = data_l_;
-            fingertip[0] = fingertip_l_[0];
-            fingertip[1] = fingertip_l_[1];
-            fingertip[2] = fingertip_l_[2];
-            fingertip[3] = fingertip_l_[3];
-            fingertip[4] = fingertip_l_[4];
+            fingertip_ik[0] = fingertip_l_[0];
+            fingertip_ik[1] = fingertip_l_[1];
+            fingertip_ik[2] = fingertip_l_[2];
+            fingertip_ik[3] = fingertip_l_[3];
+            fingertip_ik[4] = fingertip_l_[4];
         }
 
         // 创建平移向量
@@ -323,8 +537,8 @@ namespace ruiyan::rh15
         // 创建旋转矩阵
         Eigen::Matrix3d rotation;
         rotation = Eigen::AngleAxisd(request->roll_base, Eigen::Vector3d::UnitX()) *
-                    Eigen::AngleAxisd(request->pitch_base, Eigen::Vector3d::UnitY()) *
-                    Eigen::AngleAxisd(request->yaw_base, Eigen::Vector3d::UnitZ());
+                Eigen::AngleAxisd(request->pitch_base, Eigen::Vector3d::UnitY()) *
+                Eigen::AngleAxisd(request->yaw_base, Eigen::Vector3d::UnitZ());
         // 设置基坐标系空间姿态
         pinocchio::SE3 base_to_world(rotation, translation);
 
@@ -332,19 +546,20 @@ namespace ruiyan::rh15
         for (int i = 0; i < 5; i++)
         {
             Eigen::Vector3d pos(request->x[i], request->y[i], request->z[i]);
-
             rotation = Eigen::AngleAxisd(request->roll[i], Eigen::Vector3d::UnitX()) *
-                        Eigen::AngleAxisd(request->pitch[i], Eigen::Vector3d::UnitY()) *
-                        Eigen::AngleAxisd(request->yaw[i], Eigen::Vector3d::UnitZ());
+                Eigen::AngleAxisd(request->pitch[i], Eigen::Vector3d::UnitY()) *
+                Eigen::AngleAxisd(request->yaw[i], Eigen::Vector3d::UnitZ());
+
+            // Eigen::Vector3d pos(res_fk.x[i], res_fk.y[i], res_fk.z[i]);
+            // rotation = Eigen::AngleAxisd(res_fk.roll[i], Eigen::Vector3d::UnitX()) *
+            //     Eigen::AngleAxisd(res_fk.pitch[i], Eigen::Vector3d::UnitY()) *
+            //     Eigen::AngleAxisd(res_fk.yaw[i], Eigen::Vector3d::UnitZ());
 
             pinocchio::SE3 pose(rotation, pos);
             target_pos[i] = pose.translation();
             target_rot[i] = rotation;
-            target_quat[i] = Eigen::Quaterniond(pose.rotation());
             target_poses[i] = pose;
         }
-
-        #if 1
 
         // 计算 target_pose 相对于 base 坐标系的位姿
         for (int i = 0; i < 5; i++)
@@ -352,92 +567,146 @@ namespace ruiyan::rh15
             target_poses[i] = base_to_world.actInv(target_poses[i]);
         }
 
-        #endif
+        // 2. 灵巧手参数配置
+        const std::vector<std::pair<int, int>> coupled_joints = {{2,3}, {7,8}, {12,13}, {17,18}, {22,23}};    // 耦合关节对
+        const std::vector<int> fixed_joints = {4,9,14,19,24}; // 固定关节
+        Eigen::VectorXd minq = model_ik_.lowerPositionLimit;  // 从模型获取或自定义
+        Eigen::VectorXd maxq = model_ik_.upperPositionLimit;
+           
+        // 定义目标关节的ID
+        int target_joint_id = 5;
+   
+        // 初始化关节角度为中立位置
+        q_ik_ = pinocchio::neutral(model_ik_);
+        // 定义收敛误差阈值
+        const double eps = 1e-4;
+        // 定义最大迭代次数
+        const int IT_MAX = 50;
+        // 定义每次迭代的时间步长
+        const double DT = 0.5; // 1e-0;
+        // 定义阻尼系数，用于伪逆求解时的稳定性
+        const double damp = 1e-6;
+           
+        // 定义雅可比矩阵
+        pinocchio::Data::Matrix6x J(6, model_ik_.nv);
+        J.setZero(); // 初始化为零矩阵
+           
+        // 定义是否成功的标志
+        bool success = false;
+        // 定义6维误差向量
+        typedef Eigen::Matrix<double, 6, 1> Vector6d;
+        Vector6d err;
+        // 定义关节速度向量
+        Eigen::VectorXd v(model_ik_.nv);
+        char finger_done = 0;
 
-        // 定义每个手指的关节索引（示例为单指，需扩展为多指）
-        std::vector<int> active_joints  = { 2, 7, 12, 17, 22 }; // 主动关节 q2 的模型索引
-        std::vector<int> passive_joints = { 3, 8, 13, 18, 23 }; // 随动关节 q3 的模型索引
-
-        // 定义关节限制
-        Eigen::VectorXd q_min = model_ik_.lowerPositionLimit;
-        Eigen::VectorXd q_max = model_ik_.upperPositionLimit;
-
-        double tolerance = 1e-2;
-        int max_iter = 100;
-        int iter = 0;
-        double dt = 1e-1;
-        double damping = 1e-2; // 定义阻尼项
-        q_ik_ = q_;
-
-        // 迭代求解 IK
-        for (iter = 0; iter < max_iter; ++iter)
+        auto start_time = std::chrono::high_resolution_clock::now();
+        for( int finger_idx = 0; finger_idx<5; finger_idx++ )
         {
-            pinocchio::forwardKinematics(model_ik_, data_ik_, q_ik_);
+            const pinocchio::SE3 oMdes = target_poses[finger_idx];
+            target_joint_id = model_ik_.getJointId( fingertip_ik[finger_idx] ) ;
 
-            Eigen::VectorXd total_error(6 * 5);             // 5 个手指，每个手指 6 个自由度
-            Eigen::MatrixXd total_J(6 * 5, model_ik_.nv);   // 5 个手指，每个手指 6 个自由度
+            J.setZero();
+            v.setZero();
 
-            for (size_t finger_idx = 0; finger_idx < 5; ++finger_idx)
+            // 开始迭代求解
+            for (int i = 0;; i++)
             {
-                const auto& tip_name = fingertip[finger_idx];
-                const auto& target_pose = target_poses[finger_idx];
+                // 正向运动学计算当前位姿
+                pinocchio::forwardKinematics(model_ik_, data_ik_, q_ik_);
 
-                pinocchio::SE3 current_pose = data_ik_.oMi[model_ik_.getJointId(tip_name)];
-                pinocchio::Motion error = pinocchio::log6(target_pose.actInv(current_pose));
-                Eigen::VectorXd e = error.toVector();
+                // 计算当前位姿与目标位姿的误差
+                const pinocchio::SE3 iMd = data_ik_.oMi[target_joint_id].actInv(oMdes);
+                err = pinocchio::log6(iMd).toVector(); // 在关节坐标系中计算误差
 
-                pinocchio::Data::Matrix6x J(6, model_ik_.nv);
-                J.setZero();
-                pinocchio::computeFrameJacobian(model_ik_, data_ik_, q_ik_, model_ik_.getJointId(tip_name), pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, J);
-
-                // 合并随动关节的雅可比到主动关节
-                for (size_t i = 0; i < active_joints.size(); ++i)
+                // 如果误差小于阈值，认为收敛
+                if (err.norm() < eps)
                 {
-                    int active = active_joints[i];
-                    int passive = passive_joints[i];
-                    J.col(active) += J.col(passive); // 叠加雅可比
-                    J.col(passive).setZero();        // 随动关节不再独立
+                    success = true;
+                    break;
+                }
+                // 如果超过最大迭代次数，停止迭代
+                if (i >= IT_MAX)
+                {
+                    success = false;
+                    break;
                 }
 
-                total_error.segment<6>(finger_idx * 6) = e;
-                total_J.block<6, Eigen::Dynamic>(finger_idx * 6, 0, 6, model_ik_.nv) = J;
+
+                // 计算关节雅可比矩阵
+                pinocchio::computeJointJacobian(model_ik_, data_ik_, q_ik_, target_joint_id, J); // J 在关节坐标系中
+
+                // 处理耦合关节的雅可比
+                for(auto [master, slave] : coupled_joints)
+                {
+                    J.col(master) += J.col(slave);  // 合并耦合列
+                    J.col(slave).setZero();
+                }
+                // 固定关节列清零
+                for(int id : fixed_joints) J.col(id).setZero();
+
+                // 计算误差的对数映射雅可比
+                pinocchio::Data::Matrix6 Jlog;
+                pinocchio::Jlog6(iMd.inverse(), Jlog);
+                // 转换为目标框架下的雅可比
+                J = -Jlog * J;
+                // 计算阻尼伪逆
+                pinocchio::Data::Matrix6 JJt;
+                JJt.noalias() = J * J.transpose();
+                JJt.diagonal().array() += damp; // 添加阻尼项
+                v.noalias() = -J.transpose() * JJt.ldlt().solve(err); // 计算关节速度
+
+                // 应用关节约束
+                // 耦合关节速度同步
+                for(auto [master, slave] : coupled_joints) v[slave] = v[master];
+                // 固定关节速度清零
+                for(int id : fixed_joints) v[id] = 0.0;
+
+                // 更新关节配置
+                q_ik_ = pinocchio::integrate(model_ik_, q_ik_, v * DT);
+                
+                // 施加关节限制
+                for(int i=0; i<q_ik_.size(); i++)
+                q_ik_[i] = std::clamp(q_ik_[i], minq[i], maxq[i]);
+                
+                // 强制执行运动学约束
+                for(auto [master, slave] : coupled_joints) q_ik_[slave] = q_ik_[master];
+                for(int id : fixed_joints) q_ik_[id] = 0.0;
+
+                //   // 每10次迭代输出误差
+                //   if (!(i % 10))
+                //     std::cout << i << ": error = " << err.transpose() << std::endl;
+
             }
 
-            if (total_error.norm() < tolerance) break;
-
-            // 伪逆求解（带阻尼项）
-            Eigen::MatrixXd J_pinv = (total_J.transpose() * total_J + 
-                                damping * Eigen::MatrixXd::Identity(model_ik_.nv, model_ik_.nv)).ldlt().solve(total_J.transpose());
-            Eigen::VectorXd dq = -J_pinv * total_error * dt;
-
-            // 更新关节角度
-            q_ik_ = pinocchio::integrate(model_ik_, q_ik_, dq);
-
-            // 裁剪主动关节角度
-            for (int j = 0; j < model_ik_.nv; ++j)
+            // 如果成功收敛，输出结果
+            if (success)
             {
-                q_ik_[j] = std::clamp(q_ik_[j], q_min[j], q_max[j]);
+                finger_done |= (1<<finger_idx);
             }
 
-            // 同步随动关节（例如 q3 = q2）
-            for (size_t i = 0; i < active_joints.size(); ++i)
-            {
-                int active = active_joints[i];
-                int passive = passive_joints[i];
-                // 强制同步
-                q_ik_[passive] = deg_to_rad(evaluatePolynomial(poly_coeff[i], 3, rad_to_deg(q_ik_[active])));
-            }
-
-            // 再次裁剪（确保同步后的随动关节不越界）
-            for (int j = 0; j < model_ik_.nv; ++j)
-            {
-                q_ik_[j] = std::clamp(q_ik_[j], q_min[j], q_max[j]);
-            }
         }
-        // q_ = q_ik_;
 
-        // 输出迭代次数和差值
-        // RCLCPP_INFO(this->get_logger(), "Iteration: %d, Error Norm: %f", iter, total_error.norm());
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+
+        // 输出结果
+        std::cout << "Execution time: " << duration << " ms" << std::endl;
+        std::cout << "finger_done (binary): " << std::bitset<5>(finger_done) << std::endl;
+
+        // 输出最终的关节角度
+        // std::cout << "result: " << q_ik_.transpose() << std::endl;
+        // 输出最终的误差
+        // std::cout << "final error: " << err.transpose() << std::endl;
+
+        // std::array<double, 20> values = {-0.1, 0.2, 0.1, 0.1, 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.};
+        // for (int i = 0; i < 20; i += 4)
+        // {
+        //     RCLCPP_INFO(this->get_logger(), "req_fk.j_ang[%d]: %.6f  q_ik_[%d] :  %.6f",i + 0 , req_fk.j_ang[i + 0], i/4*5 + 0 , q_ik_[i/4*5 + 0] );
+        //     RCLCPP_INFO(this->get_logger(), "req_fk.j_ang[%d]: %.6f  q_ik_[%d] :  %.6f",i + 1 , req_fk.j_ang[i + 1], i/4*5 + 1 , q_ik_[i/4*5 + 1] );
+        //     RCLCPP_INFO(this->get_logger(), "req_fk.j_ang[%d]: %.6f  q_ik_[%d] :  %.6f",i + 2 , req_fk.j_ang[i + 2], i/4*5 + 2 , q_ik_[i/4*5 + 2] );
+        //     RCLCPP_INFO(this->get_logger(), "req_fk.j_ang[%d]: %.6f  q_ik_[%d] :  %.6f",i + 3 , req_fk.j_ang[i + 3], i/4*5 + 3 , q_ik_[i/4*5 + 3] );
+        // }
 
         // 返回结果
         for (int i = 0; i < q_ik_.size(); i += 5 )
@@ -448,9 +717,14 @@ namespace ruiyan::rh15
             response->j_ang[ i/5 * 4 + 3 ] = q_ik_[ i + 3 ];
         }
 
-
+        req_ik = *request;
+        res_ik = *response;
+        
     }
 
+
+
+#endif
 
 
     void rh15_ctrl::UpdataMotor( void )
@@ -514,11 +788,6 @@ namespace ruiyan::rh15
                 // end pos cmd
                 case 2:
                 {
-                    Eigen::Vector3d target_pos[5];
-                    Eigen::Matrix3d target_rot[5];
-                    Eigen::Quaterniond target_quat[5];
-                    pinocchio::SE3 target_poses[5];
-    
                     if (rh15msg.lr)
                     {
                         model_ = model_r_;
@@ -539,7 +808,7 @@ namespace ruiyan::rh15
                         fingertip[3] = fingertip_l_[3];
                         fingertip[4] = fingertip_l_[4];
                     }
-    
+
                     // 设置基坐标系空间姿态
                     rh15msg.x_base = cmd.x_base;
                     rh15msg.y_base = cmd.y_base;
@@ -547,134 +816,29 @@ namespace ruiyan::rh15
                     rh15msg.roll_base = cmd.roll_base;
                     rh15msg.pitch_base = cmd.pitch_base;
                     rh15msg.yaw_base = cmd.yaw_base;
-    
-                    // 创建平移向量
-                    Eigen::Vector3d translation(cmd.x_base, cmd.y_base, cmd.z_base);
-                    // 创建旋转矩阵
-                    Eigen::Matrix3d rotation;
-                    rotation = Eigen::AngleAxisd(cmd.roll_base, Eigen::Vector3d::UnitX()) *
-                                Eigen::AngleAxisd(cmd.pitch_base, Eigen::Vector3d::UnitY()) *
-                                Eigen::AngleAxisd(cmd.yaw_base, Eigen::Vector3d::UnitZ());
-                    // 设置基坐标系空间姿态
-                    pinocchio::SE3 base_to_world(rotation, translation);
-    
-                    // 构建目标姿态
+
+                    req_ik.lr = rh15msg.lr;
+                    req_ik.x_base = rh15msg.x_base;
+                    req_ik.y_base = rh15msg.y_base;
+                    req_ik.z_base = rh15msg.z_base;
+                    req_ik.roll_base = rh15msg.roll_base;
+                    req_ik.pitch_base = rh15msg.pitch_base;
+                    req_ik.yaw_base = rh15msg.yaw_base;
                     for (int i = 0; i < 5; i++)
                     {
-                        Eigen::Vector3d pos(cmd.x[i], cmd.y[i], cmd.z[i]);
-    
-                        rotation = Eigen::AngleAxisd(cmd.roll[i], Eigen::Vector3d::UnitX()) *
-                                    Eigen::AngleAxisd(cmd.pitch[i], Eigen::Vector3d::UnitY()) *
-                                    Eigen::AngleAxisd(cmd.yaw[i], Eigen::Vector3d::UnitZ());
-    
-                        pinocchio::SE3 pose(rotation, pos);
-                        target_pos[i] = pose.translation();
-                        target_rot[i] = rotation;
-                        target_quat[i] = Eigen::Quaterniond(pose.rotation());
-                        target_poses[i] = pose;
+                        req_ik.x[i] = cmd.x[i];
+                        req_ik.y[i] = cmd.y[i];
+                        req_ik.z[i] = cmd.z[i];
+                        req_ik.roll[i] = cmd.roll[i];
+                        req_ik.pitch[i] = cmd.pitch[i];
+                        req_ik.yaw[i] = cmd.yaw[i];
                     }
-    
-                    #if 1
-    
-                    // 计算 target_pose 相对于 base 坐标系的位姿
-                    for (int i = 0; i < 5; i++)
+                    rh15ik(model_, data_, q_iik_, fingertip, std::make_shared<rh15_cmd::srv::Rh15ik::Request>(req_ik), std::make_shared<rh15_cmd::srv::Rh15ik::Response>(res_ik));
+                    for ( int i = 0; i < 20; i ++ )
                     {
-                        target_poses[i] = base_to_world.actInv(target_poses[i]);
+                        cmd.j_ang[ i ] = res_ik.j_ang[ i ];
                     }
-    
-                    #endif
-    
-                    // 定义每个手指的关节索引（示例为单指，需扩展为多指）
-                    std::vector<int> active_joints  = { 2,  7, 12, 17, 22 }; // 主动关节 q2 的模型索引
-                    std::vector<int> passive_joints = { 3,  8, 13, 18, 23 }; // 随动关节 q3 的模型索引
-    
-                    // 定义关节限制
-                    Eigen::VectorXd q_min = model_.lowerPositionLimit;
-                    Eigen::VectorXd q_max = model_.upperPositionLimit;
-    
-                    double tolerance = 1e-2;
-                    int max_iter = 1000;
-                    double dt = 1e-1;
-                    double damping = 1e-2; // 定义阻尼项
-                    Eigen::VectorXd q_ik = q_;
-    
-                    // 迭代求解 IK
-                    for (int iter = 0; iter < max_iter; ++iter)
-                    {
-                        pinocchio::forwardKinematics(model_, data_, q_ik);
-    
-                        Eigen::VectorXd total_error(6 * 5); // 5 个手指，每个手指 6 个自由度
-                        Eigen::MatrixXd total_J(6 * 5, model_.nv); // 5 个手指，每个手指 6 个自由度
-    
-                        for (size_t finger_idx = 0; finger_idx < 5; ++finger_idx)
-                        {
-                            const auto& tip_name = fingertip[finger_idx];
-                            const auto& target_pose = target_poses[finger_idx];
-    
-                            pinocchio::SE3 current_pose = data_.oMi[model_.getJointId(tip_name)];
-                            pinocchio::Motion error = pinocchio::log6(target_pose.actInv(current_pose));
-                            Eigen::VectorXd e = error.toVector();
-    
-                            pinocchio::Data::Matrix6x J(6, model_.nv);
-                            J.setZero();
-                            pinocchio::computeFrameJacobian(model_, data_, q_ik, model_.getJointId(tip_name), pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, J);
-    
-                            // 合并随动关节的雅可比到主动关节
-                            for (size_t i = 0; i < active_joints.size(); ++i)
-                            {
-                                int active = active_joints[i];
-                                int passive = passive_joints[i];
-                                J.col(active) += J.col(passive); // 叠加雅可比
-                                J.col(passive).setZero();        // 随动关节不再独立
-                            }
-    
-                            total_error.segment<6>(finger_idx * 6) = e;
-                            total_J.block<6, Eigen::Dynamic>(finger_idx * 6, 0, 6, model_.nv) = J;
-                        }
-    
-                        if (total_error.norm() < tolerance) break;
-    
-                        // 伪逆求解（带阻尼项）
-                        Eigen::MatrixXd J_pinv = (total_J.transpose() * total_J +
-                                                    damping * Eigen::MatrixXd::Identity(model_.nv, model_.nv))
-                                                    .ldlt().solve(total_J.transpose());
-                        Eigen::VectorXd dq = -J_pinv * total_error * dt;
-    
-                        // 更新关节角度
-                        q_ik = pinocchio::integrate(model_, q_ik, dq);
-    
-                        // 裁剪主动关节角度
-                        for (int j = 0; j < model_.nv; ++j)
-                        {
-                            q_ik[j] = std::clamp(q_ik[j], q_min[j], q_max[j]);
-                        }
-    
-                        // 同步随动关节（例如 q3 = q2）
-                        for (size_t i = 0; i < active_joints.size(); ++i)
-                        {
-                            int active = active_joints[i];
-                            int passive = passive_joints[i];
-                            // 强制同步
-                            q_ik[passive] = deg_to_rad(evaluatePolynomial(poly_coeff[i], 3, rad_to_deg(q_ik[active])));
-                        }
-    
-                        // 再次裁剪（确保同步后的随动关节不越界）
-                        for (int j = 0; j < model_.nv; ++j)
-                        {
-                            q_ik[j] = std::clamp(q_ik[j], q_min[j], q_max[j]);
-                        }
-                    }
-    
-                    q_ = q_ik;
-    
-                    for ( int i = 0; i < q_.size(); i += 5 )
-                    {
-                        cmd.j_ang[ i/5 * 4 + 0 ] = q_[ i + 0 ];
-                        cmd.j_ang[ i/5 * 4 + 1 ] = q_[ i + 1 ];
-                        cmd.j_ang[ i/5 * 4 + 2 ] = q_[ i + 2 ];
-                        cmd.j_ang[ i/5 * 4 + 3 ] = q_[ i + 3 ];
-                    }
-    
+
                     for (int i = 0; i < 20; i++)
                     {
                         if (i % 4 == 3)
@@ -832,8 +996,6 @@ namespace ruiyan::rh15
             }
         }
 
-
- 
 
         // 正解FK
         if( rh15msg.lr )

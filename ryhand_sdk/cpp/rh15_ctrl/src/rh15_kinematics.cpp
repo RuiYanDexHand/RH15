@@ -170,41 +170,59 @@ private:
     Eigen::Quaterniond target_quat(msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z);
     pinocchio::SE3 target_pose(target_quat.toRotationMatrix(), target_pos);
 
-    double tolerance = 1e-4;
-    int max_iter = 1000;
-    double dt = 1e-1;
-    Eigen::VectorXd q_ik = q_;
+    const double eps = 1e-4;
+    const int IT_MAX = 1000;
+    const double DT = 1e-1;
+    const double damp = 1e-6;
 
-    // 迭代求解 IK
-    for (int i = 0; i < max_iter; ++i)
+    pinocchio::Data::Matrix6x J(6, model_.nv);
+    J.setZero();
+
+    bool success = false;
+    typedef Eigen::Matrix<double, 6, 1> Vector6d;
+    Vector6d err;
+    Eigen::VectorXd q_ik = q_;
+    Eigen::VectorXd v(model_.nv);
+
+    for (int i = 0; i < IT_MAX; ++i)
     {
       pinocchio::forwardKinematics(model_, data_, q_ik);
-      pinocchio::SE3 current_pose = data_.oMi[model_.getJointId("fz15")];
+      const pinocchio::SE3 iMd = data_.oMi[model_.getJointId("fz15")].actInv(target_pose);
+      err = pinocchio::log6(iMd).toVector(); // 在关节坐标系中计算误差
 
-      // 计算误差（误差在李代数空间内）
-      pinocchio::Motion error = pinocchio::log6(target_pose.actInv(current_pose));
-
-      if (error.toVector().norm() < tolerance)
+      if (err.norm() < eps)
       {
+        success = true;
         break;
       }
 
-      // 计算雅可比矩阵
-      pinocchio::Data::Matrix6x J(6, model_.nv);
-      J.setZero();
-      // 计算各关节雅可比
-      pinocchio::computeJointJacobians(model_, data_, q_ik);
+      pinocchio::computeJointJacobian(model_, data_, q_ik, model_.getJointId("fz15"), J); // 计算雅可比矩阵
+      pinocchio::Data::Matrix6 Jlog;
+      pinocchio::Jlog6(iMd.inverse(), Jlog);
+      J = -Jlog * J;
 
-      // 获取末端相对于 LOCAL_WORLD_ALIGNED 的雅可比
-      pinocchio::computeFrameJacobian(model_, data_, q_ik, model_.getJointId("fz15"), pinocchio::ReferenceFrame::LOCAL_WORLD_ALIGNED, J);
+      pinocchio::Data::Matrix6 JJt;
+      JJt.noalias() = J * J.transpose();
+      JJt.diagonal().array() += damp;
 
-      // 伪逆更新关节角度
-      Eigen::MatrixXd J_pinv = J.completeOrthogonalDecomposition().pseudoInverse();
-      q_ik = pinocchio::integrate(model_, q_ik, -J_pinv * error.toVector() * dt);
+      v.noalias() = -J.transpose() * JJt.ldlt().solve(err);
+      q_ik = pinocchio::integrate(model_, q_ik, v * DT);
+
+      if (!(i % 10))
+        RCLCPP_INFO(this->get_logger(), "Iteration %d: error = [%f, %f, %f, %f, %f, %f]", i, err(0), err(1), err(2), err(3), err(4), err(5));
     }
 
-    q_ = q_ik;
-    RCLCPP_INFO(this->get_logger(), "IK solution: [%f, %f]", q_(0), q_(1));
+    if (success)
+    {
+      RCLCPP_INFO(this->get_logger(), "IK Convergence achieved!");
+      q_ = q_ik;
+    }
+    else
+    {
+      RCLCPP_WARN(this->get_logger(), "IK did not converge to the desired precision.");
+    }
+
+    // RCLCPP_INFO(this->get_logger(), "Final IK solution: [%s]", q_.transpose().format(Eigen::IOFormat()).c_str());
   }
 };
 
