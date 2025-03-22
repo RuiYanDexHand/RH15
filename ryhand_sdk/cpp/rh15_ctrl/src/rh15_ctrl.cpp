@@ -433,8 +433,14 @@ namespace ruiyan::rh15
                 q_ik = pinocchio::integrate(model, q_ik, v * DT);
                 for (int i = 0; i < q_ik.size(); i++)
                     q_ik[i] = std::clamp(q_ik[i], minq[i], maxq[i]);
-                for (auto [master, slave] : coupled_joints) q_ik[slave] = q_ik[master];
+
+                for (auto [master, slave] : coupled_joints) 
+                    q_ik[slave] = deg_to_rad( evaluatePolynomial( poly_coeff[finger_idx], 3,  rad_to_deg( value_to_rad75( q_ik[master] ) ) ) ); 
+
                 for (int id : fixed_joints) q_ik[id] = 0.0;
+
+                for (int i = 0; i < q_ik.size(); i++)
+                    q_ik[i] = std::clamp(q_ik[i], minq[i], maxq[i]);
             }
         };
 
@@ -670,8 +676,13 @@ namespace ruiyan::rh15
                 q_ik_[i] = std::clamp(q_ik_[i], minq[i], maxq[i]);
                 
                 // 强制执行运动学约束
-                for(auto [master, slave] : coupled_joints) q_ik_[slave] = q_ik_[master];
-                for(int id : fixed_joints) q_ik_[id] = 0.0;
+                for (auto [master, slave] : coupled_joints) 
+                q_ik[slave] = deg_to_rad( evaluatePolynomial( poly_coeff[finger_idx], 3,  rad_to_deg( value_to_rad75( q_ik[master] ) ) ) ); 
+
+                for (int id : fixed_joints) q_ik[id] = 0.0;
+
+                for (int i = 0; i < q_ik.size(); i++)
+                    q_ik[i] = std::clamp(q_ik[i], minq[i], maxq[i]);
 
                 //   // 每10次迭代输出误差
                 //   if (!(i % 10))
