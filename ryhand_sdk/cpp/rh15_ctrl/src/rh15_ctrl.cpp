@@ -980,10 +980,26 @@ int main(int argc, char *argv[])
 {
     u8_t ret = 0;
     u8_t i = 0;
+    const char *can_dev = "can0";
 
+    // 打印参数
+    printf("Program Arguments:\n");
+    for (int i = 0; i < argc; i++) {
+        printf("argv[%d]: %s\n", i, argv[i]);
+    }
+
+    // 检查 argc 个数
+    if (argc > 1) 
+    {
+        if (strncmp(argv[1], "can", 3) == 0) 
+        {
+            can_dev = argv[1];
+        }
+    }
+    printf("Using CAN interface: %s\n", can_dev);
 
     // 打开 CAN 设备
-    if( !open_can_socket(&sock, &addr, &ifr) )
+    if( !open_can_socket( &sock, &addr, &ifr, can_dev) )
     {
         printf("open can socket failed\n");
         sock = 0;

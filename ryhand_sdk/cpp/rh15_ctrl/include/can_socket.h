@@ -32,7 +32,7 @@ extern int sock;                          // CAN 套接字
 extern struct sockaddr_can addr;          // CAN 地址
 extern struct ifreq ifr;                  // 网络接口请求
 
-extern u8_t open_can_socket(int *sock, struct sockaddr_can *addr, struct ifreq *ifr);
+extern u8_t open_can_socket(int *sock, struct sockaddr_can *addr, struct ifreq *ifr, const char *can_interface);
 extern u8_t send_can_message(int sock, u8_t id, u8_t *data, u8_t len );
 extern u8_t receive_can_message(int sock, struct can_frame *frame );
 extern void close_can_socket(int sock);

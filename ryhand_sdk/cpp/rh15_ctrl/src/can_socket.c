@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "can_socket.h"
 
-#define CAN_INTERFACE "can0"      // 替换为实际的 CAN 接口名称
+
 
 
 int sock = 0;                      // CAN 套接字
@@ -13,22 +13,8 @@ struct sockaddr_can addr;          // CAN 地址
 struct ifreq ifr;                  // 网络接口请求
 
 
-// 请先在终端完成接口的配置
-u8_t open_can_socket(int *psock, struct sockaddr_can *addr, struct ifreq *ifr) 
+u8_t open_can_socket(int *psock, struct sockaddr_can *addr, struct ifreq *ifr,  const char *can_interface) 
 {
-
-    // char command[128];
-
-    // // 构建设置波特率的命令
-    // snprintf(command, sizeof(command), "sudo ip link set %s type can bitrate 1000000", CAN_INTERFACE);
-
-    // // 执行命令
-    // if (system(command) != 0) 
-    // {
-    //     perror("Failed to set CAN bitrate");
-    // }
-
-
     // 创建 SocketCAN 套接字
     if ((*psock = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) 
     {
@@ -37,7 +23,7 @@ u8_t open_can_socket(int *psock, struct sockaddr_can *addr, struct ifreq *ifr)
     }
 
     // 获取接口索引
-    strcpy(ifr->ifr_name, CAN_INTERFACE);
+    strcpy(ifr->ifr_name, can_interface);
     if (ioctl(*psock, SIOCGIFINDEX, ifr) < 0) 
     {
         perror("ioctl: Failed to get interface index");
@@ -53,12 +39,10 @@ u8_t open_can_socket(int *psock, struct sockaddr_can *addr, struct ifreq *ifr)
         perror("Bind failed");
         return 0;
     }
-    printf("CAN socket opened successfully on interface: %s\n", CAN_INTERFACE);
-
+    printf("CAN socket opened successfully on interface: %s\n", can_interface);
 
     int flags = fcntl(*psock, F_GETFL, 0);
     fcntl(*psock, F_SETFL, flags | O_NONBLOCK);
-
 
     int buf_size;
     socklen_t len = sizeof(buf_size);
@@ -69,7 +53,7 @@ u8_t open_can_socket(int *psock, struct sockaddr_can *addr, struct ifreq *ifr)
 
     // 获取发送缓冲区大小
     getsockopt(*psock, SOL_SOCKET, SO_SNDBUF, &buf_size, &len);
-    printf("Send buffer size: %d bytes\n",  buf_size);
+    printf("Send buffer size: %d bytes\n", buf_size);
 
     return 1;
 }
