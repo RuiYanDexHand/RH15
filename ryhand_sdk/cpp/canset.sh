@@ -1,6 +1,12 @@
 # sudo ip link set can0 up type can bitrate 1000000
 #  板子烧了slcan固件之后，接入ubuntu系统中，不需要任何驱动，都可以查看到设备： 
 
+# 如果是 wsl 子系统，先在windows 主机中执行如下三条命令：
+# usbipd list
+# usbipd bind -b 4-3
+# usbipd attach -b 4-3 -w
+
+
 
 sudo apt install can-utils
 sudo apt install ros-$ROS_DISTRO-pinocchio
